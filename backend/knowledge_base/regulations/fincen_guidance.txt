@@ -1,0 +1,46 @@
+FINCEN SAR NARRATIVE GUIDANCE — KEY POINTS
+
+Source: Financial Crimes Enforcement Network (FinCEN)
+Reference: https://www.fincen.gov/resources/statutes-and-regulations/guidance/suspicious-activity-report-narrative
+
+---
+
+## SAR Narrative Best Practices
+
+### Structure
+Every SAR narrative should follow a three-part structure:
+1. INTRODUCTION — Purpose, type of activity, prior SARs, internal reference
+2. BODY — Detailed facts addressing Who, What, When, Where, Why, How
+3. CONCLUSION — Summary, actions taken, contact info, document references
+
+### The 5Ws + How Framework
+- WHO: Identify subjects, account holders, beneficiaries, third parties
+- WHAT: Describe suspicious transactions, instruments, amounts
+- WHEN: Dates, timeframes, single event vs. pattern
+- WHERE: Locations, branches, jurisdictions, foreign involvement
+- WHY: Explain why activity is suspicious given customer profile
+- HOW: Method of operation, transaction mechanisms
+
+### Writing Guidelines
+- Write for law enforcement audience
+- Be clear, concise, and factual
+- Avoid internal jargon and acronyms (or define them)
+- Do not repeat data already in SAR form fields
+- Include relevant keywords for searchability
+- Link all claims to specific evidence
+
+### Filing Requirements
+- File within 30 calendar days of initial detection
+- Retain SAR and supporting documentation for 5 years
+- Do not disclose SAR filing to the subject
+
+### Common Typologies to Reference
+- Structuring / Smurfing
+- Layering
+- Trade-based money laundering
+- Funnel accounts
+- Human trafficking indicators
+- Terrorist financing
+- Shell company abuse
+- Real estate fraud
+- Elder financial exploitation

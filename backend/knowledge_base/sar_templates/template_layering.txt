@@ -1,0 +1,25 @@
+SAR NARRATIVE TEMPLATE: LAYERING
+
+---
+
+INTRODUCTION:
+This Suspicious Activity Report (SAR) is filed by [Institution Name] to report suspected layering activity involving [Subject Name], account number [Account Number]. Between [Start Date] and [End Date], the account exhibited transaction patterns consistent with the layering stage of money laundering, involving rapid movement of funds through multiple accounts and/or jurisdictions to obscure the audit trail.
+
+Internal Investigation Reference: [Case ID]
+
+BODY:
+
+WHO: [Subject Name], a [Individual/Entity] holding a [Account Type] account since [Date]. Associated entities identified: [List any related companies, accounts, or individuals involved in the transaction chain].
+
+WHAT: The account conducted [Number] transfers totaling [Total Amount] through [Number] intermediary accounts/entities. The transactions exhibited round-tripping characteristics, with funds flowing through [describe chain: Account A → Account B → Account C → back to Account A or similar].
+
+WHEN: The layering activity occurred between [Start Date] and [End Date]. The turnaround time between incoming and outgoing transfers averaged [Duration], suggesting rapid pass-through rather than legitimate business use.
+
+WHERE: Funds moved across [Number] financial institutions in [Number] jurisdictions, including [List jurisdictions]. Key institutions involved: [List banks/entities].
+
+WHY: The rapid movement of funds across multiple accounts with no apparent business purpose, combined with the involvement of [shell companies / high-risk jurisdictions / PEP connections], is consistent with layering techniques designed to obscure the origin and beneficial ownership of potentially illicit funds.
+
+HOW: Funds entered via [Method] at [Source], were transferred through a chain of [Number] intermediary accounts using [wire transfers / internal transfers / convertible virtual currency], and ultimately [describe final disposition].
+
+CONCLUSION:
+The institution has identified the described activity as potentially indicative of money laundering (layering phase). [Actions taken]. Supporting documentation maintained at [Reference].

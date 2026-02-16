@@ -1,0 +1,29 @@
+SAR NARRATIVE TEMPLATE: STRUCTURING / SMURFING
+
+---
+
+INTRODUCTION:
+This Suspicious Activity Report (SAR) is being filed by [Institution Name] to report suspicious transaction activity involving [Subject Name], account number [Account Number]. The activity, observed between [Start Date] and [End Date], is consistent with structuring/smurfing patterns, where multiple transactions are conducted in amounts designed to evade reporting thresholds.
+
+[If applicable: This is a continuation/follow-up SAR to a previously filed report (reference: [Prior SAR Reference Number]).]
+
+Internal Investigation Reference: [Case ID]
+
+BODY:
+
+WHO: The subject, [Full Name], has maintained a [Account Type] account with [Institution Name] since [Date]. KYC verification status: [Verified/Pending]. The subject's declared occupation is [Occupation] with an expected monthly transaction volume of [Amount].
+
+WHAT: During the review period, the account received [Number] deposits/transfers totaling [Total Amount] from [Number] unique sources. The individual transaction amounts were predominantly [below/near] the reporting threshold of [Threshold Amount], suggesting possible structuring.
+
+WHEN: The suspicious activity was identified between [Start Date] and [End Date], spanning [Number] days. The transactions occurred [pattern description, e.g., "daily", "in rapid succession", "at regular intervals"].
+
+WHERE: The transactions were processed through [Branch/Online/ATM] at [Location(s)]. [If applicable: Funds were subsequently transferred to [Foreign Bank/Jurisdiction].]
+
+WHY: The transaction pattern is inconsistent with the subject's declared business activity of [Business Type] and historical transaction profile (average monthly volume: [Amount]). The pattern of multiple sub-threshold transactions from numerous unique senders is consistent with known structuring/smurfing typologies used to disguise the source and destination of illicit funds.
+
+HOW: Funds were received via [Transaction Method, e.g., NEFT, RTGS, cash deposits] from [Number] different accounts/individuals. The funds were then consolidated in the subject's account and [describe disposition: transferred abroad, withdrawn as cash, etc.] within [timeframe].
+
+CONCLUSION:
+Based on the analysis detailed above, [Institution Name] has determined that the transaction activity warrants reporting to [Regulatory Authority]. The institution has [describe actions: enhanced monitoring, placed account restrictions, filed internal escalation, etc.]. All supporting documentation, including transaction records and KYC files, are maintained at [Location/Reference] and available upon request.
+
+For additional information, contact: [Compliance Officer Name, Title, Phone, Email]

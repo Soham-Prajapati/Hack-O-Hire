@@ -1,0 +1,84 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environment
+venv/
+.venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.cursor/
+.gemini/
+.kiro/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Database
+*.db
+*.sqlite3
+pgdata/
+
+# ML Models (large files)
+ml_models/*.joblib
+ml_models/*.pkl
+ml_models/*.h5
+ml_models/*.bin
+
+# Data (large files - download separately)
+data/raw/
+data/datasets/
+*.csv
+*.parquet
+!data/sample_data/*.csv
+
+# ChromaDB persistence
+chroma_db/
+chromadb_store/
+
+# Ollama
+ollama_models/
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Screenshots (keep folder, ignore large files)
+screenshots/*.mp4
+screenshots/*.avi
+
+# BMAD (hackathon tool artifacts)
+_bmad/
+_bmad-output/
+.agent/
+
+# Artifacts
+*.pyc
+.pytest_cache/
+htmlcov/
+.coverage
