@@ -1,14 +1,19 @@
 """
-SAR Narrative Generator — Streamlit Frontend (Demo-Ready)
-Full working prototype with realistic mock data for video demo.
+SAR Narrative Generator — Streamlit Frontend (Demo-Ready + API Wired)
+Full working prototype with realistic mock data fallback + live backend integration.
 
-Owner: Het (P3) — Shubh building demo version
+Owner: SIDDH ONLY
 """
 import streamlit as st
 import time
 import json
 import pandas as pd
 from datetime import datetime
+import sys, os
+
+# Ensure frontend directory is on path for api_client import
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from api_client import is_backend_available, get_system_status, upload_file, generate_sar, list_cases
 
 # Page config
 st.set_page_config(
@@ -18,7 +23,15 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# --- MOCK DATA (Realistic for demo) ---
+# --- Initialize session state ---
+if "generated_sar" not in st.session_state:
+    st.session_state.generated_sar = None
+if "uploaded_case_id" not in st.session_state:
+    st.session_state.uploaded_case_id = None
+if "sar_id" not in st.session_state:
+    st.session_state.sar_id = None
+
+# --- MOCK DATA (Realistic fallback for demo) ---
 MOCK_CASES = [
     {
         "case_id": "CASE-7A3F21",
@@ -62,73 +75,7 @@ MOCK_CASES = [
     },
 ]
 
-MOCK_SAR_NARRATIVE = {
-    "introduction": """This Suspicious Activity Report (SAR) is being filed by HDFC Bank Ltd. to report suspicious transaction activity involving account holder Rajesh Kumar, account number XXXX-4521. The activity, observed between January 15–22, 2026, is consistent with structuring/smurfing patterns involving the receipt of funds from multiple unrelated sources followed by immediate international transfer. This is the initial SAR filing on this subject. Internal Investigation Reference: CASE-7A3F21.""",
-
-    "body": """**WHO:** The subject, Rajesh Kumar (PAN: XXXXX1234K), has maintained a Current Account (XXXX-4521) with HDFC Bank, Andheri West Branch, Mumbai, since March 2019. KYC verification status: Verified (last updated: September 2025). The subject's declared occupation is Textile Export with a registered firm "Kumar Textiles" (GST: 27XXXXX1234K1ZF). Historical average monthly transaction volume: ₹3,00,000.
-
-**WHAT:** During the review period, the account received 20 inbound transfers totaling ₹50,12,000 from 20 unique sender accounts across 14 different banks. The individual transfer amounts ranged from ₹76,000 to ₹1,45,000 — predominantly below the ₹10,00,000 reporting threshold when viewed individually. Within 48 hours of the last inbound credit, the subject initiated a single outbound SWIFT transfer of ₹48,00,000 to Deutsche Bank AG, Frankfurt (Account: DB-INTL-9999), with the stated purpose "Trade Settlement — Fabric Import."
-
-**WHEN:** The suspicious inbound activity occurred over a 5-day window from January 15–19, 2026. Transfers were received at regular intervals during banking hours (9:00 AM – 3:00 PM IST). The consolidation and outbound international transfer occurred on January 20, 2026, at 10:00 AM IST — the first business day following the final inbound credit.
-
-**WHERE:** All inbound transfers were processed through the HDFC Bank NEFT/RTGS clearing system, originating from 14 different banks including SBI, ICICI, Axis, PNB, Bank of Baroda, Kotak Mahindra, and others across multiple states (Maharashtra, Gujarat, Delhi, Karnataka, Tamil Nadu). The outbound transfer was routed through HDFC Bank's SWIFT gateway to Deutsche Bank AG, Frankfurt, Germany.
-
-**WHY:** The transaction pattern is highly inconsistent with the subject's declared business profile:
-• Monthly volume spike: 16.7x above the declared average (₹50.12L vs. ₹3L/month)
-• 20 unique senders with no prior transaction history with the subject
-• No corresponding trade documentation or invoices supporting the "Trade Settlement" purpose
-• Immediate consolidation and international transfer within 48 hours
-• Pattern matches known structuring/smurfing typology: aggregation of sub-threshold amounts from multiple sources to disguise the origin of funds before layering through international channels
-
-**HOW:** Funds were received via NEFT (17 transfers) and RTGS (3 transfers) from 20 distinct accounts held at 14 banks. The sender accounts showed no prior relationship with the subject. After consolidation in account XXXX-4521, ₹48,00,000 was transferred internationally via SWIFT to a Deutsche Bank account in Frankfurt. The remaining ₹2,12,000 was retained in the account. The method of operation is consistent with smurfing — using multiple low-value transfers from different sources to avoid individual transaction reporting thresholds, followed by rapid international transfer to obscure the audit trail.""",
-
-    "conclusion": """Based on the analysis detailed above, HDFC Bank Ltd. has determined that the transaction activity associated with account holder Rajesh Kumar (Account: XXXX-4521) warrants filing of this SAR with FIU-IND. The institution has implemented the following actions: (1) Enhanced transaction monitoring on the subject's account, (2) Placed a temporary hold on international transfer privileges pending investigation, (3) Initiated internal review of the subject's KYC documentation and trade-related records, (4) Flagged all 20 sender accounts for cross-referencing in the bank's AML system. All supporting documentation, including transaction records, KYC files, and SWIFT messages, are maintained at HDFC Bank Compliance Division, BKC Mumbai, and are available upon request. For additional information, contact: AML Compliance Officer, compliance@hdfcbank.com, +91-22-XXXX-XXXX."""
-}
-
-MOCK_AUDIT_TRAIL = [
-    {
-        "step": 1,
-        "agent": "🔍 Data Analyst Agent",
-        "action": "Analyzed 21 transactions for account XXXX-4521",
-        "data_points": ["20 inbound transfers from 20 unique senders", "Total inbound: ₹50,12,000", "1 outbound SWIFT: ₹48,00,000", "Time window: 5 days (Jan 15-19)", "Outbound within 48 hrs of last credit"],
-        "output": "HIGH-RISK PATTERN DETECTED: Multiple sub-threshold inbound transfers from unrelated senders, followed by immediate international consolidation transfer. Volume 16.7x above declared average.",
-        "confidence": 0.96,
-    },
-    {
-        "step": 2,
-        "agent": "📋 Compliance Mapper Agent",
-        "action": "Matched transaction patterns to regulatory typologies",
-        "data_points": ["FinCEN Advisory FIN-2024-A003 (Structuring)", "RBI Master Direction Sec 14.2 (Suspicious Patterns)", "FATF Typology: ML/TF Red Flag Indicator #23"],
-        "output": "PRIMARY TYPOLOGY: Structuring/Smurfing (Confidence: 94%). SECONDARY: Layering via international wire (Confidence: 87%). Matched 3 regulatory references.",
-        "confidence": 0.94,
-    },
-    {
-        "step": 3,
-        "agent": "📖 RAG Context Retriever",
-        "action": "Retrieved regulatory templates and similar past SARs",
-        "data_points": ["SAR Template T-005 (Structuring)", "FinCEN Narrative Guidance (5Ws+How)", "Similar SAR: CASE-2025-8821 (89% similarity)"],
-        "output": "Retrieved 3 relevant documents. Template T-005 selected as primary narrative framework. Past SAR CASE-2025-8821 used as reference for language patterns.",
-        "confidence": 0.91,
-    },
-    {
-        "step": 4,
-        "agent": "✍️ Narrator Agent",
-        "action": "Generated FinCEN-compliant SAR narrative",
-        "data_points": ["Structure: Introduction → Body (5Ws+How) → Conclusion", "Word count: 847 words", "All 5Ws addressed", "Evidence-linked throughout"],
-        "output": "Draft SAR narrative generated in FinCEN format. All six elements (Who, What, When, Where, Why, How) addressed with specific data point citations. Three-part structure maintained.",
-        "confidence": 0.93,
-    },
-    {
-        "step": 5,
-        "agent": "✅ QA Validator Agent",
-        "action": "Validated narrative completeness, compliance, and quality",
-        "data_points": ["Completeness: 95% (all required elements present)", "Compliance: 98% (FinCEN format met)", "Readability: Flesch-Kincaid Grade 12.1", "Evidence Linkage: 91% (43/47 claims backed)"],
-        "output": "PASSED: Narrative meets quality thresholds. Minor suggestion: Add sender geographic distribution detail in WHERE section. Overall quality score: 93/100.",
-        "confidence": 0.95,
-    },
-]
-
-# Custom CSS
+# Custom CSS with animations
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -136,6 +83,21 @@ st.markdown("""
     .stApp {
         font-family: 'Inter', sans-serif;
     }
+    
+    /* Fade-in animation */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+    
     .main-header {
         font-size: 2.2rem;
         font-weight: 700;
@@ -143,12 +105,14 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0;
+        animation: fadeInUp 0.6s ease-out;
     }
     .sub-header {
         font-size: 1rem;
         color: #8b949e;
         margin-top: 0;
         margin-bottom: 1.5rem;
+        animation: fadeInUp 0.7s ease-out;
     }
     .metric-card {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -156,11 +120,17 @@ st.markdown("""
         border-radius: 12px;
         padding: 1.2rem;
         text-align: center;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: fadeInUp 0.5s ease-out both;
     }
+    .metric-card:nth-child(1) { animation-delay: 0.1s; }
+    .metric-card:nth-child(2) { animation-delay: 0.2s; }
+    .metric-card:nth-child(3) { animation-delay: 0.3s; }
+    .metric-card:nth-child(4) { animation-delay: 0.4s; }
+    .metric-card:nth-child(5) { animation-delay: 0.5s; }
     .metric-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
     }
     .metric-value {
         font-size: 2rem;
@@ -181,10 +151,13 @@ st.markdown("""
         border-radius: 10px;
         padding: 1rem 1.2rem;
         margin-bottom: 0.8rem;
-        transition: border-color 0.2s;
+        transition: border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        animation: fadeInUp 0.5s ease-out both;
     }
     .case-card:hover {
         border-color: #667eea;
+        transform: translateX(4px);
+        box-shadow: -4px 0 15px rgba(102, 126, 234, 0.1);
     }
     .badge {
         display: inline-block;
@@ -192,31 +165,39 @@ st.markdown("""
         border-radius: 20px;
         font-size: 0.75rem;
         font-weight: 600;
+        transition: transform 0.2s ease;
     }
+    .badge:hover { transform: scale(1.05); }
     .badge-draft { background: #1f2937; color: #fbbf24; border: 1px solid #fbbf24; }
     .badge-review { background: #1e3a5f; color: #60a5fa; border: 1px solid #60a5fa; }
     .badge-approved { background: #064e3b; color: #34d399; border: 1px solid #34d399; }
-    .audit-step {
-        background: #161b22;
-        border-left: 3px solid #667eea;
-        border-radius: 0 8px 8px 0;
-        padding: 1rem;
-        margin-bottom: 0.5rem;
+    .risk-critical { animation: pulse 2s infinite; }
+    .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 6px;
+        animation: pulse 2s infinite;
     }
-    .confidence-bar {
-        height: 6px;
-        border-radius: 3px;
-        background: #21262d;
-        overflow: hidden;
-        margin-top: 0.5rem;
+    .status-online { background: #34d399; }
+    .status-offline { background: #f87171; animation: none; }
+    .api-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-left: 4px;
     }
-    .confidence-fill {
-        height: 100%;
-        border-radius: 3px;
-        background: linear-gradient(90deg, #667eea, #34d399);
-    }
+    .api-badge-live { background: #064e3b; color: #34d399; border: 1px solid #34d399; }
+    .api-badge-mock { background: #1f2937; color: #fbbf24; border: 1px solid #fbbf24; }
 </style>
 """, unsafe_allow_html=True)
+
+# --- Check backend status ---
+backend_online = is_backend_available()
+status = get_system_status()
 
 # --- SIDEBAR ---
 with st.sidebar:
@@ -225,16 +206,23 @@ with st.sidebar:
     st.markdown("---")
 
     st.markdown("### ⚙️ System Status")
-    st.markdown("🟢 Backend API: `Online`")
-    st.markdown("🟢 Ollama LLM: `Running`")
-    st.markdown("🟢 ChromaDB: `Connected`")
-    st.markdown("🟢 PostgreSQL: `Connected`")
+    for label, key in [("Backend API", "backend"), ("Ollama LLM", "ollama"), ("ChromaDB", "chromadb"), ("PostgreSQL", "postgres")]:
+        is_up = status.get(key, False)
+        dot_class = "status-online" if is_up else "status-offline"
+        status_text = "Online" if is_up else "Offline"
+        st.markdown(f'<span class="status-dot {dot_class}"></span> {label}: `{status_text}`', unsafe_allow_html=True)
+    
+    st.markdown("---")
+    if backend_online:
+        st.markdown('<span class="api-badge api-badge-live">● LIVE MODE</span>', unsafe_allow_html=True)
+    else:
+        st.markdown('<span class="api-badge api-badge-mock">◌ DEMO MODE</span>', unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("**Model:** Llama 3.1 8B Instruct")
     st.markdown("**RAG Docs:** 47 indexed")
     st.markdown("**Avg Gen Time:** ~45 sec")
     st.markdown("---")
-    st.markdown("👤 **Analyst:** Shubh")
+    st.markdown("👤 **Analyst:** Siddh")
     st.markdown("🔑 **Role:** Admin")
 
 # --- MAIN PAGE ---
@@ -292,40 +280,104 @@ with col_left:
             st.markdown("#### 📊 Data Preview")
             st.dataframe(df.head(10), use_container_width=True)
             st.markdown(f"*{len(df)} transactions loaded*")
+            uploaded_file.seek(0)  # Reset for API upload
 
         if st.button("🤖 Generate SAR Narrative", type="primary", use_container_width=True):
-            progress = st.progress(0, text="Initializing AI pipeline...")
-            
-            steps = [
-                (10, "📥 Ingesting transaction data..."),
-                (25, "🔍 Data Analyst Agent: Analyzing patterns..."),
-                (40, "📋 Compliance Agent: Matching typologies..."),
-                (55, "📖 RAG: Retrieving regulatory templates..."),
-                (70, "✍️ Narrator Agent: Generating SAR narrative..."),
-                (85, "✅ QA Agent: Validating completeness..."),
-                (95, "💾 Saving to database..."),
-                (100, "✨ SAR narrative generated!"),
-            ]
-            
-            for pct, msg in steps:
-                progress.progress(pct, text=msg)
-                time.sleep(0.8)
-            
-            st.success("🎉 **SAR Narrative Generated!** Navigate to the **SAR Editor** page to review.")
-            st.balloons()
+            if backend_online:
+                # --- LIVE MODE: Call real API ---
+                with st.spinner("📤 Uploading to backend..."):
+                    upload_data, upload_err = upload_file(uploaded_file)
+                
+                if upload_err:
+                    st.error(f"Upload failed: {upload_err}")
+                else:
+                    case_id = upload_data["case_id"]
+                    st.session_state.uploaded_case_id = case_id
+                    st.toast(f"✅ Data uploaded — {upload_data.get('transaction_count', 0)} transactions parsed", icon="📤")
+                    
+                    progress = st.progress(0, text="🤖 Generating SAR narrative via AI pipeline...")
+                    steps = [
+                        (15, "🔍 Data Analyst Agent: Analyzing patterns..."),
+                        (35, "📋 Compliance Agent: Matching typologies..."),
+                        (55, "📖 RAG: Retrieving regulatory templates..."),
+                        (75, "✍️ Narrator Agent: Generating narrative..."),
+                        (90, "✅ QA Agent: Validating completeness..."),
+                    ]
+                    for pct, msg in steps:
+                        progress.progress(pct, text=msg)
+                        time.sleep(0.5)
+                    
+                    sar_data, sar_err = generate_sar(case_id)
+                    progress.progress(100, text="✨ Complete!")
+                    
+                    if sar_err:
+                        st.warning(f"⚠️ Generation issue: {sar_err}. Showing demo narrative.")
+                    else:
+                        st.session_state.generated_sar = sar_data
+                        st.session_state.sar_id = sar_data.get("sar_id")
+                        st.success(f"🎉 **SAR Generated!** (ID: `{sar_data.get('sar_id')}`) → Navigate to **SAR Editor** to review.")
+                        st.balloons()
+            else:
+                # --- DEMO MODE: Simulate with mock animation ---
+                progress = st.progress(0, text="Initializing AI pipeline...")
+                steps = [
+                    (10, "📥 Ingesting transaction data..."),
+                    (25, "🔍 Data Analyst Agent: Analyzing patterns..."),
+                    (40, "📋 Compliance Agent: Matching typologies..."),
+                    (55, "📖 RAG: Retrieving regulatory templates..."),
+                    (70, "✍️ Narrator Agent: Generating SAR narrative..."),
+                    (85, "✅ QA Agent: Validating completeness..."),
+                    (95, "💾 Saving to database..."),
+                    (100, "✨ SAR narrative generated!"),
+                ]
+                for pct, msg in steps:
+                    progress.progress(pct, text=msg)
+                    time.sleep(0.8)
+                
+                st.success("🎉 **SAR Narrative Generated!** Navigate to the **SAR Editor** page to review.")
+                st.toast("Demo mode — backend not connected", icon="ℹ️")
+                st.balloons()
 
 with col_right:
     st.markdown("### 🚨 Active Cases")
     
-    for case in MOCK_CASES:
+    # Try live data first, fall back to mock
+    display_cases = MOCK_CASES
+    if backend_online:
+        live_cases, err = list_cases()
+        if live_cases and not err:
+            # Merge: show live cases + mock cases
+            live_ids = {c.get("case_id") for c in live_cases}
+            merged = []
+            for lc in live_cases:
+                risk_map = {"critical": "🔴 CRITICAL", "high": "🟠 HIGH", "medium": "🟡 MEDIUM", "low": "🟢 LOW"}
+                merged.append({
+                    "case_id": lc.get("case_id", ""),
+                    "customer_name": lc.get("customer_name", "Unknown"),
+                    "alert_type": lc.get("alert_type", "Suspicious Transaction"),
+                    "risk_level": risk_map.get(lc.get("risk_level", "medium"), "🟡 MEDIUM"),
+                    "sar_status": lc.get("sar_status", "draft").capitalize(),
+                    "total_amount": "—",
+                    "txn_count": "—",
+                    "created_at": lc.get("created_at", ""),
+                })
+            # Add mock cases that aren't in live
+            for mc in MOCK_CASES:
+                if mc["case_id"] not in live_ids:
+                    merged.append(mc)
+            display_cases = merged
+
+    for i, case in enumerate(display_cases):
         badge_class = {
             "Draft": "badge-draft",
             "Review": "badge-review",
             "Approved": "badge-approved",
         }.get(case["sar_status"], "badge-draft")
+        
+        risk_extra = ' class="risk-critical"' if "CRITICAL" in str(case.get("risk_level", "")) else ""
 
         st.markdown(f"""
-        <div class="case-card">
+        <div class="case-card" style="animation-delay: {i * 0.1}s;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <strong style="color:#c9d1d9;">{case['customer_name']}</strong>
                 <span class="badge {badge_class}">{case['sar_status']}</span>
@@ -334,9 +386,9 @@ with col_right:
                 {case['case_id']} · {case['alert_type']}
             </div>
             <div style="display:flex; gap:1.5rem; margin-top:8px; font-size:0.85rem;">
-                <span style="color:#f87171;">{case['risk_level']}</span>
-                <span style="color:#8b949e;">💰 {case['total_amount']}</span>
-                <span style="color:#8b949e;">📊 {case['txn_count']} txns</span>
+                <span{risk_extra} style="color:#f87171;">{case['risk_level']}</span>
+                <span style="color:#8b949e;">💰 {case.get('total_amount', '—')}</span>
+                <span style="color:#8b949e;">📊 {case.get('txn_count', '—')} txns</span>
             </div>
         </div>
         """, unsafe_allow_html=True)

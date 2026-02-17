@@ -101,7 +101,7 @@ chmod +x setup.sh
 - [x] **Upload page:** File uploader → show parsed data in table ✅
 - [x] **SAR Editor:** Split-screen (data left, narrative editor right), Approve/Reject/Export buttons ✅
 - [x] **Audit Trail:** Expandable cards, color-coded steps ✅
-- [ ] Wire up to backend API (`requests.get/post` to FastAPI)
+- [x] Wire up to backend API (`requests.get/post` to FastAPI) — `api_client.py` + all pages wired ✅
 - [x] **IMPORTANT:** If backend not ready, use **mock JSON** so UI is fully demo-able ✅
 - [x] Add loading spinners, dark mode polish ✅
 
@@ -141,8 +141,8 @@ chmod +x setup.sh
 - [ ] Help Shubh with integration debugging
 
 ### SIDDH — Frontend Final + Video
-- [ ] Connect to live backend (replace mocks)
-- [ ] Polish UI (animations, error handling)
+- [x] Connect to live backend (replace mocks) — graceful fallback when offline ✅
+- [x] Polish UI (animations, error handling) — fade-in, pulse, hover, toast ✅
 - [ ] Take **final screenshots** of working prototype
 - [ ] **Record demo video** (3-4 min screen recording)
 
