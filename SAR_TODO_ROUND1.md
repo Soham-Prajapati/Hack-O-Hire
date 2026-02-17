@@ -74,14 +74,14 @@ chmod +x setup.sh
 > **Sync Point:** Quick call after Phase 2 to test connections.
 
 ### SHUBH — Backend + AI Integration
-- [ ] Implement `POST /api/upload` — parse uploaded CSV using Het's parser, store in memory
-- [ ] Implement `POST /api/generate-sar` — call Dev's `generate_sar()`, return result
-- [ ] Implement `GET /api/sar/{id}` — return stored SAR + audit trail
-- [ ] Implement `PUT /api/sar/{id}` — accept edited narrative, track diff
-- [ ] Implement `POST /api/sar/{id}/approve` — change status to approved
-- [ ] Wire up Het's `predict_typology()` into the generate pipeline
-- [ ] Test all endpoints with `curl` / Postman
-- [ ] Help Dev with any LLM integration issues
+- [x] Implement `POST /api/upload` — parse uploaded CSV using Het's parser, store in memory
+- [x] Implement `POST /api/generate-sar` — call Dev's `generate_sar()`, return result
+- [x] Implement `GET /api/sar/{id}` — return stored SAR + audit trail
+- [x] Implement `PUT /api/sar/{id}` — accept edited narrative, track diff
+- [x] Implement `POST /api/sar/{id}/approve` — change status to approved
+- [x] Wire up Het's `predict_typology()` into the generate pipeline
+- [x] Test all endpoints with `curl` / Postman
+- [x] Help Dev with any LLM integration issues
 
 ### DEV — LLM/RAG Core (AI Heavy)
 - [ ] Install Ollama, pull `llama3.1:8b` model

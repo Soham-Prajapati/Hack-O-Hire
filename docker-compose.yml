@@ -1,6 +1,30 @@
 # SAR Narrative Generator — Docker Services
 
 services:
+  # FastAPI Backend
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: sargen_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+      - ./ml_models:/app/ml_models
+      - ./data:/app/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama3.1:8b
+      - POSTGRES_HOST=postgres
+    depends_on:
+      - postgres
+      - ollama
+    command: >
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    working_dir: /app/backend
+    restart: unless-stopped
+
   # PostgreSQL — optional for prototype (in-memory storage works fine)
   postgres:
     image: postgres:16-alpine

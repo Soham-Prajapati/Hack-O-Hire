@@ -1,9 +1,16 @@
 """
 SAR Narrative Generator — FastAPI Backend
 """
+import sys
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
+
+# Ensure project root is on sys.path so `ml_models` package is importable
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 
 app = FastAPI(
     title="SAR Narrative Generator",
@@ -32,3 +39,4 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+

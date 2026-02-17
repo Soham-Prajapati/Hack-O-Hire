@@ -7,7 +7,7 @@
 |-------|-------|
 | **Person** | Shubh |
 | **Role** | Backend + AI Integration Lead (FastAPI, SQLAlchemy, PostgreSQL) |
-| **Setup Date** | 2026-02-17 12:09 PM IST |
+| **Setup Date** | 2026-02-17 12:39 PM IST |
 | **Machine** | Sohams-MacBook-Air-2.local |
 | **OS** | Darwin 25.2.0 arm64 |
 | **Python** | Python 3.13.12 |

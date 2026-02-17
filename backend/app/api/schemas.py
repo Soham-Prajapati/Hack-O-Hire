@@ -113,3 +113,12 @@ class CaseListItem(BaseModel):
 class CaseListResponse(BaseModel):
     cases: list[CaseListItem]
     total: int
+
+
+class UploadResponse(BaseModel):
+    case_id: str
+    filename: str
+    status: str = "uploaded"
+    message: str = ""
+    transaction_count: int = 0
+    customer_name: str = "Unknown"
