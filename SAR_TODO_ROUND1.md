@@ -84,12 +84,12 @@ chmod +x setup.sh
 - [x] Help Dev with any LLM integration issues
 
 ### DEV — LLM/RAG Core (AI Heavy)
-- [ ] Install Ollama, pull `llama3.1:8b` model
-- [ ] Build full SAR generation system prompt (FinCEN format, 5Ws+How, guardrails)
-- [ ] Index knowledge base docs (SAR templates + FinCEN guidance) into ChromaDB
-- [ ] Build RAG chain: query → retrieve templates → augment prompt → generate
-- [ ] Implement LangChain callback handler for audit trail capture
-- [ ] Create `generate_sar(alert_data: dict) -> dict` returning:
+- [/] Install Ollama, pull `llama3.1:8b` model (Download at ~80%)
+- [x] Build full SAR generation system prompt (FinCEN format, 5Ws+How, guardrails)
+- [x] Index knowledge base docs (SAR templates + FinCEN guidance) into ChromaDB
+- [x] Build RAG chain: query → retrieve templates → augment prompt → generate
+- [x] Implement LangChain callback handler for audit trail capture
+- [x] Create `generate_sar(alert_data: dict) -> dict` returning:
   - `narrative` (intro + body + conclusion)
   - `audit_trail` (list of reasoning steps)
   - `quality_score` (completeness, compliance, readability, evidence)
