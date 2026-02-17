@@ -10,7 +10,7 @@
 |-------|---------|
 | **Title** | SAR Narrative Generator with Intelligent Audit Trail |
 | **Subtitle** | AI-Powered Suspicious Activity Report Drafting for Financial Compliance |
-| **Team Name** | [Your Team Name] |
+| **Team Name** | VayuDevs |
 | **Hackathon** | Hack-O-Hire 2026 |
 | **Tagline** | *"From 6 hours to 6 minutes — defensible, transparent, regulator-ready."* |
 
@@ -163,6 +163,24 @@
 
 ---
 
+## Slide 9b: Competitor Analysis
+
+### Market Landscape:
+
+| Feature | **VayuDevs (Our Solution)** | **NICE Actimize / SAS** | **Lucinity / ComplyAdvantage** |
+| :--- | :--- | :--- | :--- |
+| **Primary AI Model** | **Llama 3.1 8B (Local)** | Proprietary / Black-box | Cloud-based LLMs |
+| **Data Privacy** | **100% On-Premise** (Zero Exfiltration) | On-Premise (High Cost) | Cloud (Data leaves premise) |
+| **Audit Compliance** | **White-box** (Full Provenance) | Opaque Rules | Varies |
+| **Cost** | **₹0 Licensing** (Open Source) | **$100k+ / year** | **$50k+ / year** |
+| **Deployment** | **Anywhere** (Laptop to Server) | Heavy Infrastructure | Cloud-Only |
+| **Customization** | **Full Context** (Code access) | Vendor Dependent | API Limits |
+
+### Why We Win:
+> While competitors charge huge licensing fees for black-box solutions, **VayuDevs** democratizes advanced financial crime compliance. We offer **Tier-1 bank capabilities** on **commodity hardware** with **zero privacy risk**.
+
+---
+
 ## Slide 10: Live Demo Plan
 
 ### Demo Script (3–4 minutes):
@@ -287,6 +305,6 @@
 | Field | Content |
 |-------|---------|
 | **Closing Line** | *"Making compliance faster, smarter, and fully transparent."* |
-| **Team Members** | [List all 5 members] |
-| **Contact** | [Email / LinkedIn] |
-| **GitHub** | [Repo URL] |
+| **Team Members** | Soham Prajapati · Dev Gaglani · Siddh Sakariya · Het Salot · Sakshi Rathi |
+| **Campus** | Sardar Patel Institute of Technology |
+| **GitHub** | [Soham-Prajapati/Hack-O-Hire](https://github.com/Soham-Prajapati/Hack-O-Hire) |

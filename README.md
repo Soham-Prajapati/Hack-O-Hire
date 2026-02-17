@@ -69,7 +69,7 @@ Frontend (Streamlit) → REST API (FastAPI) → Multi-Agent Pipeline (LangChain)
 
 ### 1. Clone & Setup
 ```bash
-git clone https://github.com/<your-username>/Hack-O-Hire.git
+git clone https://github.com/Soham-Prajapati/Hack-O-Hire.git
 cd Hack-O-Hire
 
 # Create virtual environment
@@ -149,15 +149,17 @@ Hack-O-Hire/
 
 ---
 
-## 👥 Team
+## 👥 Team — VayuDevs
+
+> Sardar Patel Institute of Technology
 
 | Member | Role |
 |--------|------|
-| P1 | Backend Lead |
-| P2 | LLM/RAG Engineer |
-| P3 | Frontend Lead |
-| P4 | Data & ML Engineer |
-| P5 | Docs & Submission |
+| Soham Prajapati | Backend + AI Integration Lead |
+| Dev Gaglani | LLM/RAG + AI Core Lead |
+| Siddh Sakariya | Frontend Lead |
+| Het Salot | Data & ML Engineer |
+| Sakshi Rathi | Docs, PPT & Submission Lead |
 
 ---
 
