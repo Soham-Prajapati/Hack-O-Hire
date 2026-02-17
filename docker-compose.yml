@@ -1,22 +1,40 @@
-version: '3.8'
+# SAR Narrative Generator — Docker Services
 
 services:
+  # PostgreSQL — optional for prototype (in-memory storage works fine)
   postgres:
     image: postgres:16-alpine
     container_name: sargen_postgres
     environment:
+      POSTGRES_DB: sargen_db
       POSTGRES_USER: sargen
       POSTGRES_PASSWORD: sargen_password
-      POSTGRES_DB: sargen_db
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sargen"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    restart: unless-stopped
+
+  # Ollama — LLM inference server
+  # Run on Dev's machine or any machine with ≥8GB RAM
+  # After starting: docker exec sargen_ollama ollama pull llama3.1:8b
+  ollama:
+    image: ollama/ollama:latest
+    container_name: sargen_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    # Uncomment below for GPU support (NVIDIA only):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    restart: unless-stopped
 
 volumes:
   pgdata:
+  ollama_data:
