@@ -1,0 +1,43 @@
+﻿============================================================
+  VERIFICATION: Het's Data & ML Components
+============================================================
+
+--- 1. Data Parser ---
+  scenario_smurfing.csv               -> 21 txns, customer='Rajesh Kumar'
+  scenario_layering.csv               -> 18 txns, customer='Apex Trading Corp'
+  scenario_structuring.csv            -> 20 txns, customer='Amit Verma Savings'
+  [PASS] All CSVs parsed successfully
+
+--- 2. Classifier Training ---
+[TypologyClassifier] Model saved to D:\Het\barcaly\Hack-O-Hire\ml_models\typology_model.joblib
+[TypologyClassifier] Accuracy=1.0000  F1=1.0000  Precision=1.0000  Recall=1.0000
+  Accuracy : 1.0
+  F1 Score : 1.0
+  Precision: 1.0
+  Recall   : 1.0
+  [PASS] Accuracy > 0.80
+
+--- 3. Predictions on Demo Scenarios ---
+  scenario_smurfing.csv               -> round_tripping  (conf=0.6798)
+    top_features: {'num_unique_receivers': 0.2489, 'total_amount': 0.1885, 'avg_amount': 0.1458, 'below_threshold_ratio': 0.1405, 'time_window_days': 0.1246}
+  scenario_layering.csv               -> layering        (conf=0.9978)
+    top_features: {'num_unique_receivers': 0.2489, 'total_amount': 0.1885, 'avg_amount': 0.1458, 'below_threshold_ratio': 0.1405, 'time_window_days': 0.1246}
+  scenario_structuring.csv            -> structuring     (conf=0.9994)
+    top_features: {'num_unique_receivers': 0.2489, 'total_amount': 0.1885, 'avg_amount': 0.1458, 'below_threshold_ratio': 0.1405, 'time_window_days': 0.1246}
+
+--- 4. SHAP Explanations ---
+  Typology  : round_tripping
+  Confidence: 0.6798
+  SHAP features: {'num_unique_senders': -2.7824, 'avg_amount': 1.1891, 'avg_time_gap_hours': 0.7433, 'time_window_days': -0.5447, 'max_single_txn': 0.1457}
+  [PASS] SHAP explanations working
+
+--- 5. Classification Report ---
+  normal                precision=1.00  recall=1.00  f1=1.00
+  structuring           precision=1.00  recall=1.00  f1=1.00
+  smurfing              precision=1.00  recall=1.00  f1=1.00
+  layering              precision=1.00  recall=1.00  f1=1.00
+  round_tripping        precision=1.00  recall=1.00  f1=1.00
+
+============================================================
+  ALL VERIFICATIONS PASSED
+============================================================

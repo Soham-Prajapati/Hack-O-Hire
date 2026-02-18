@@ -41,25 +41,25 @@ call %VENV_DIR%\Scripts\activate.bat
 REM --- Step 2: Upgrade pip ---
 echo.
 echo Upgrading pip...
-pip install --upgrade pip -q
+pip install --upgrade pip
 
 REM --- Step 3: Install core packages ---
 echo.
 echo Installing core packages (Streamlit + FastAPI + Pandas)...
-pip install streamlit fastapi uvicorn pandas plotly python-dotenv python-multipart httpx pydantic pydantic-settings networkx -q
+pip install streamlit fastapi uvicorn pandas plotly python-dotenv python-multipart httpx pydantic pydantic-settings networkx
 echo Core packages installed!
 
 REM --- Step 4: Role-specific packages ---
 if "%ROLE%"=="shubh" (
     echo.
     echo Installing Shubh's packages ^(Backend + DB^)...
-    pip install sqlalchemy alembic "psycopg[binary]" fpdf2 -q
+    pip install sqlalchemy alembic "psycopg[binary]" fpdf2
     echo Backend packages installed!
 )
 if "%ROLE%"=="dev" (
     echo.
     echo Installing Dev's packages ^(LLM + RAG^)...
-    pip install langchain langchain-community langchain-ollama chromadb ollama -q
+    pip install langchain langchain-community langchain-ollama chromadb ollama
     echo LLM/RAG packages installed!
     echo.
     echo To set up Ollama with Docker:
@@ -73,8 +73,12 @@ if "%ROLE%"=="siddh" (
 if "%ROLE%"=="het" (
     echo.
     echo Installing Het's packages ^(ML + Data^)...
-    pip install xgboost scikit-learn shap joblib -q
-    echo ML packages installed!
+    pip install xgboost scikit-learn shap joblib
+    if errorlevel 1 (
+        echo Warning: Some ML packages may not have installed correctly.
+    ) else (
+        echo ML packages installed!
+    )
 )
 if "%ROLE%"=="sakshi" (
     echo.
@@ -83,7 +87,7 @@ if "%ROLE%"=="sakshi" (
 if "%ROLE%"=="all" (
     echo.
     echo Installing ALL packages...
-    pip install -r backend\requirements.txt -r frontend\requirements.txt -q
+    pip install -r backend\requirements.txt -r frontend\requirements.txt
     echo All packages installed!
 )
 

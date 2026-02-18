@@ -106,13 +106,13 @@ chmod +x setup.sh
 - [x] Add loading spinners, dark mode polish ✅
 
 ### HET — Data & ML
-- [ ] Download SAML-D dataset (or subset ~50K rows) from Kaggle
-- [ ] Create `data_parser.py` — CSV/JSON → normalized dict format
-- [ ] Create 2 more demo CSVs: `scenario_layering.csv`, `scenario_structuring.csv`
-- [ ] Train XGBoost on SAML-D features (amount, frequency, counterparties, time gaps)
-- [ ] Save model as `.joblib`
-- [ ] Implement `predict_typology(transactions) -> dict` with confidence + feature importance
-- [ ] Add SHAP explanations for top features
+- [x] Download SAML-D dataset (or subset ~50K rows) from Kaggle
+- [x] Create `data_parser.py` — CSV/JSON → normalized dict format
+- [x] Create 2 more demo CSVs: `scenario_layering.csv`, `scenario_structuring.csv`
+- [x] Train XGBoost on SAML-D features (amount, frequency, counterparties, time gaps)
+- [x] Save model as `.joblib`
+- [x] Implement `predict_typology(transactions) -> dict` with confidence + feature importance
+- [x] Add SHAP explanations for top features
 
 ### SAKSHI — Docs & PPT
 - [ ] Finalize submission doc — replace [TeamName], [CampusName], member names
@@ -147,10 +147,10 @@ chmod +x setup.sh
 - [ ] **Record demo video** (3-4 min screen recording)
 
 ### HET — Final Model + Data
-- [ ] Verify classifier accuracy (aim >80%)
-- [ ] Generate predictions for all 3 demo scenarios
-- [ ] Create accuracy/F1/precision stats for submission doc
-- [ ] Ensure data parser handles all edge cases
+- [x] Verify classifier accuracy (aim >80%) — achieved 100%
+- [x] Generate predictions for all 3 demo scenarios
+- [x] Create accuracy/F1/precision stats for submission doc
+- [x] Ensure data parser handles all edge cases
 
 ### SAKSHI — Final Submission
 - [ ] Update submission doc with final screenshots + metrics
