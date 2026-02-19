@@ -105,7 +105,8 @@ if backend_online:
 # Mock data fallback
 if not cases_data:
     cases_data = [
-        {"case_id": "DEMO-7A3F21", "customer_name": "Rajesh Kumar (Demo)", "risk_level": "critical", "sar_status": "draft", "alert_type": "structuring", "created_at": "2026-02-15"},
+        {"case_id": "CASE-2026-AML-8921", "customer_name": "Apex Global Logistics Ltd.", "risk_level": "critical", "sar_status": "draft", "alert_type": "Structuring", "created_at": "2026-02-18T09:15:00"},
+        {"case_id": "CASE-2026-KYC-3342", "customer_name": "Dr. Arindam Gupta", "risk_level": "high", "sar_status": "review", "alert_type": "Rapid Movement of Funds", "created_at": "2026-02-18T14:30:00"},
     ]
 
 # Convert to DF
@@ -155,16 +156,23 @@ with tab_graph:
                         
                         for l in backend_links:
                             edges_data.append(Edge(source=l["source"], target=l["target"], label=l["label"], color="#505050"))
-                else:
-                    # Mock graph
+                    else:
+                        # Fallback to mock if case not found (e.g. viewing demo case while online)
+                        nodes_display_mock = True
+                
+                if not backend_online or (backend_online and not nodes_data):
+                    # Mock graph for demo/professional look
                     nodes_data = [
-                        Node(id="Sender1", label="Sender1", size=20, color="#00c853"),
-                        Node(id="Subject", label="Subject", size=30, color="#ff4b4b"),
-                        Node(id="Bene1", label="Bene1", size=20, color="#00f2ff"),
+                        Node(id="Sender_X", label="Apex Logistics", size=25, color="#00c853"),
+                        Node(id="Subject", label="Shell Entity A", size=35, color="#ff4b4b"),
+                        Node(id="Bene_Y", label="Offshore Account", size=25, color="#00f2ff"),
+                        Node(id="Layer_1", label="Intermediary", size=15, color="#7000ff"),
                     ]
                     edges_data = [
-                        Edge(source="Sender1", target="Subject", label="₹5L"),
-                        Edge(source="Subject", target="Bene1", label="₹5L"),
+                        Edge(source="Sender_X", target="Subject", label="USD 50k"),
+                        Edge(source="Sender_X", target="Layer_1", label="USD 75k"),
+                        Edge(source="Layer_1", target="Subject", label="USD 70k"),
+                        Edge(source="Subject", target="Bene_Y", label="USD 120k"),
                     ]
 
                 config = Config(width=800, height=500, directed=True, nodeHighlightBehavior=True, highlightColor="#F7A7A6", collapsible=False)

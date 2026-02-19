@@ -1,7 +1,7 @@
 # Frontend Dependencies — SAR Narrative Generator
 
 streamlit==1.41.1
-requests==2.32.3
+requests==2.32.5
 plotly==5.24.1
 networkx==3.4.2
 matplotlib==3.10.0

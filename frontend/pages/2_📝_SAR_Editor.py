@@ -62,9 +62,10 @@ with col_editor:
     # Fetch SAR Data
     sar_data = None
     if backend_online and selected_case_id:
-        # Check if SAR exists in session or fetch
-        # Simplified logic for demo
-        pass
+        # Check if SAR exists in session and matches selected case
+        if st.session_state.get("generated_sar") and st.session_state.generated_sar.get("case_id") == selected_case_id:
+            sar_data = st.session_state.generated_sar
+            st.toast("Loaded generated SAR from session", icon="⚡")
     
     # Check if we have data to show, otherwise show generation button
     # Check if we have data to show, otherwise show generation button

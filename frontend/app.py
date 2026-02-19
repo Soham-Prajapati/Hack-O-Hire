@@ -35,15 +35,25 @@ if "sar_id" not in st.session_state:
 # --- MOCK DATA (Fallback ONLY when backend is offline) ---
 MOCK_CASES = [
     {
-        "case_id": "DEMO-7A3F21",
-        "customer_name": "Rajesh Kumar (Offline Demo)",
-        "alert_type": "High Volume Inbound Transfers",
+        "case_id": "CASE-2026-AML-8921",
+        "customer_name": "Apex Global Logistics Ltd.",
+        "alert_type": "Structuring / Smurfing",
         "risk_level": "🔴 CRITICAL",
         "sar_status": "Draft",
-        "total_amount": "₹50,12,000",
-        "txn_count": 21,
-        "created_at": "2026-02-15 10:30",
+        "total_amount": "USD 125,000.00",
+        "txn_count": 42,
+        "created_at": "2026-02-18 09:15",
     },
+    {
+        "case_id": "CASE-2026-KYC-3342",
+        "customer_name": "Dr. Arindam Gupta",
+        "alert_type": "Rapid Movement of Funds",
+        "risk_level": "🟠 HIGH",
+        "sar_status": "Review",
+        "total_amount": "INR 45,00,000",
+        "txn_count": 12,
+        "created_at": "2026-02-18 14:30",
+    }
 ]
 
 # Custom CSS with animations
@@ -319,7 +329,8 @@ with col_left:
                     else:
                         st.session_state.generated_sar = sar_data
                         st.session_state.sar_id = sar_data.get("sar_id")
-                        st.success(f"🎉 **SAR Generated!** (ID: `{sar_data.get('sar_id')}`) → Navigate to **SAR Editor** to review.")
+                        st.success(f"🎉 **SAR Generated!** (ID: `{sar_data.get('sar_id')}`)")
+                        st.page_link("pages/2_📝_SAR_Editor.py", label="👉 Go to SAR Editor", icon="📝")
                         st.balloons()
             else:
                 # --- DEMO MODE: Simulate with mock animation ---
@@ -338,7 +349,8 @@ with col_left:
                     progress.progress(pct, text=msg)
                     time.sleep(0.8)
                 
-                st.success("🎉 **SAR Narrative Generated!** Navigate to the **SAR Editor** page to review.")
+                st.success("🎉 **SAR Narrative Generated!**")
+                st.page_link("pages/2_📝_SAR_Editor.py", label="👉 Go to SAR Editor", icon="📝")
                 st.toast("Demo mode — backend not connected", icon="ℹ️")
                 st.balloons()
 
