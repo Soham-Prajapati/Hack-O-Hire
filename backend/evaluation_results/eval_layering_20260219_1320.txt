@@ -1,0 +1,87 @@
+SCENARIO: LAYERING
+DATE: 2026-02-19 13:20:08.956479
+==================================================
+
+### CUSTOMER PROFILE
+{'name': 'Priya Sharma', 'id': 'CUST-202', 'risk_profile': 'High', 'occupation': 'Import/Export Trader'}
+
+### GENERATED NARRATIVE
+INTRODUCTION:
+# Executive Summary:
+This SAR is being filed to report a complex pattern of transactions that may indicate money laundering activity involving customer Priya Sharma.
+
+# Subject:
+The subject is Priya Sharma with account ID CUST-202, classified as High Risk due to her occupation as an Import/Export Trader.
+
+# Timeframe:
+The suspicious activity was observed between January 10, 2026, and January 15, 2026.
+
+# Investigation Source:
+This alert was triggered by internal Transaction Monitoring (TM) alerts for rapid movement of funds across multiple accounts.
+
+BODY:
+# WHO:
+Priya Sharma is a High-Risk customer due to her occupation as an Import/Export Trader. Her account ID is CUST-202.
+
+# WHAT:
+The transactions involved are listed below:
+
+*   Between January 10, 2026, and January 12, 2026, the subject received 5 incoming high-value credits totaling INR 25,000,000 from various offshore entities via SWIFT transfers.
+*   The funds were then rapidly moved through multiple accounts using RTGS and NEFT transfers to different beneficiaries in India.
+
+# WHEN:
+The transactions occurred between January 10, 2026, and January 15, 2026.
+
+# WHERE:
+The transactions involved the following branches and jurisdictions:
+
+*   Offshore Holdings Ltd (CAYMAN-8001) - Cayman Islands
+*   Priya Malhotra's account (HDFC-7712) - India
+*   Apex Trading Corp (ICICI-3301) - India
+*   Ravi Shankar Enterprises (SBI-4402) - India
+*   Golden Link Services (AXIS-5503) - India
+*   Neha Kapoor's account (PNB-6604) - India
+*   Deutsche Bank Singapore (DB-SG-9901) - Singapore
+*   Vikram Jain's account (BOB-2205) - India
+*   Sapphire Exports Pvt Ltd (KOTAK-3306) - India
+*   Meera Devi Trust (CANARA-4407) - India
+*   Pacific Rim Trading (HSBC-HK-8802) - Hong Kong
+*   Sunil Agarwal's account (UNION-1108) - India
+*   Bright Future Foundation (IDBI-2209) - India
+*   Quantum Investments (YES-3310) - India
+*   Shell Corp BVI (BVI-INTL-7703) - British Virgin Islands
+
+# WHY:
+The activity is suspicious because it involves rapid movement of high-value funds across multiple accounts, indicating an attempt to layer and obscure the origin of the funds.
+
+# HOW:
+The mechanism used was a combination of SWIFT, RTGS, and NEFT transfers through various offshore entities and Indian banks.
+
+CONCLUSION:
+# Summary:
+Total suspicious activity: INR 50,000,000. Suspected typology: Money Laundering / Layering.
+
+# Action Taken:
+The account has been placed on watch, and further investigation is recommended.
+
+# Data Source:
+Internal records from the Core Banking System and KYC File.
+
+# Contact:
+For further information, please contact the AML Compliance Department.
+
+### QUALITY SCORES
+{'completeness': 0.9, 'compliance': 0.85, 'readability': 0.9, 'evidence_linkage': 0.8}
+
+### CHAT SANITY CHECK
+Q: What is the total suspicious amount and the main typology?
+A: Based on the SAR Narrative, the total suspicious activity is INR 50,000,000. The suspected typology is Money Laundering / Layering.
+
+### AUDIT TRAIL PREVIEW (First 5 Steps)
+[1] Started SAR Generation: Case Data: {'customer': {'name': 'Priya Sharma', '...
+[2] Retrieving Content: Query: Suspicious activity for customer Priya Shar...
+[3] Context Retrieved: Found 0 documents....
+[1] Prompting Model: System: You are an expert Anti-Money Laundering (A...
+[2] Generated Response: ### INTRODUCTION
+#### Executive Summary:
+This SAR ...

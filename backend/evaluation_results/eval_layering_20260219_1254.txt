@@ -1,0 +1,89 @@
+SCENARIO: LAYERING
+DATE: 2026-02-19 12:54:53.005734
+==================================================
+
+### CUSTOMER PROFILE
+{'name': 'Priya Sharma', 'id': 'CUST-202', 'risk_profile': 'High', 'occupation': 'Import/Export Trader'}
+
+### GENERATED NARRATIVE
+INTRODUCTION:
+# Executive Summary:
+This SAR is being filed to report potential structuring and smurfing activity involving customer Priya Sharma.
+
+# Subject:
+The activity involves customer Priya Sharma, account CUST-202, with a high risk profile as an Import/Export Trader.
+
+# Timeframe:
+The review period spans from January 10, 2026, to January 15, 2026.
+
+# Investigation Source:
+This alert was triggered by internal Transaction Monitoring (TM) alerts for rapid movement of funds and suspicious patterns in customer transactions.
+
+BODY:
+# WHO:
+Priya Sharma is a high-risk customer with an occupation as Import/Export Trader. No adverse media or negative history is known about the subject.
+
+
+# WHAT:
+The following transactions were identified as suspicious:
+
+*   Between January 10, 2026, and January 12, 2026, Priya Malhotra received 5 incoming high-value credits totaling INR 50,000,000 from Offshore Holdings Ltd via SWIFT transfers.
+*   On the same day, these funds were layered through multiple accounts using RTGS and NEFT transfers:
+    *   Priya Malhotra sent INR 48,000,000 to Apex Trading Corp (ICICI-3301).
+    *   Apex Trading Corp then transferred INR 46,000,000 to Ravi Shankar Enterprises (SBI-4402) via NEFT.
+    *   Ravi Shankar Enterprises further transferred INR 44,000,000 to Golden Link Services (AXIS-5503) via RTGS.
+    *   Golden Link Services then sent INR 42,000,000 to Neha Kapoor (PNB-6604) via NEFT.
+    *   Neha Kapoor finally transferred INR 40,000,000 to Deutsche Bank Singapore (DB-SG-9901) via SWIFT.
+*   On January 12, 2026, Offshore Holdings Ltd sent INR 18,000,000 to Vikram Jain (BOB-2205) via SWIFT.
+*   Vikram Jain then transferred INR 17.75 million to Sapphire Exports Pvt Ltd (KOTAK-3306) via RTGS.
+*   Sapphire Exports Pvt Ltd further transferred INR 17.7 million to Meera Devi Trust (CANARA-4407) via NEFT.
+*   On January 14, 2026, Offshore Holdings Ltd sent INR 32,000,000 to Sunil Agarwal (UNION-1108) via SWIFT.
+*   Sunil Agarwal then transferred INR 31.8 million to Bright Future Foundation (IDBI-2209) via RTGS.
+*   On the same day, Bright Future Foundation sent INR 31.6 million to Quantum Investments (YES-3310) via NEFT.
+
+# WHEN:
+The suspicious transactions occurred between January 10, 2026, and January 15, 2026.
+
+
+# WHERE:
+The transactions involved multiple branches of Indian banks (HDFC, ICICI, SBI, AXIS, PNB, BOB, KOTAK, CANARA) as well as international transfers via SWIFT to Deutsche Bank Singapore and Apex Trading Corp in the Cayman Islands.
+
+
+# WHY:
+The activity is suspicious due to rapid movement of funds, layering through multiple accounts, and potential structuring to avoid reporting thresholds. The transactions suggest an attempt to launder money by breaking down large amounts into smaller ones and transferring them across different accounts.
+
+
+# HOW:
+Funds were layered through multiple accounts using SWIFT transfers from Offshore Holdings Ltd, followed by RTGS and NEFT transfers between various Indian banks and international entities.
+
+CONCLUSION:
+# Summary:
+Total suspicious activity: INR 150,000,000. Suspected typology: Money Laundering / Layering.
+
+
+# Action Taken:
+The account has been placed on watch, and further investigation is recommended to identify the source of these funds and the ultimate beneficiaries.
+
+
+# Data Source:
+Internal records from Core Banking System and KYC File.
+
+
+# Contact:
+For further information, please contact the AML Compliance Department.
+
+### QUALITY SCORES
+{'completeness': 0.9, 'compliance': 0.85, 'readability': 0.9, 'evidence_linkage': 0.8}
+
+### CHAT SANITY CHECK
+Q: What is the total suspicious amount and the main typology?
+A: I encountered an error answering that: 'Input to ChatPromptTemplate is missing variables {"\'introduction\'", "\'name\'"}.  Expected: ["\'introduction\'", "\'name\'"] Received: []\nNote: if you intended {\'introduction\'} to be part of the string and not a variable, please escape it with double curly braces like: \'{{\'introduction\'}}\'.\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/INVALID_PROMPT_INPUT '
+
+### AUDIT TRAIL PREVIEW (First 5 Steps)
+[1] Started SAR Generation: Case Data: {'customer': {'name': 'Priya Sharma', '...
+[2] Retrieving Content: Query: Suspicious activity for customer Priya Shar...
+[3] Context Retrieved: Found 0 documents....
+[1] Prompting Model: System: You are an expert Anti-Money Laundering (A...
+[2] Generated Response: ### INTRODUCTION
+#### Executive Summary:
+This SAR ...

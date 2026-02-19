@@ -61,7 +61,12 @@ async def evaluate_scenario(engine, scenario_name, csv_filename):
     chat_query = "What is the total suspicious amount and the main typology?"
     try:
         # Use empty history for the sanity check as per new signature
-        chat_response = await engine.chat_with_sar(case_data, [], chat_query)
+        chat_response = await engine.chat_with_sar(
+            case_data=case_data, 
+            history=[], 
+            query=chat_query, 
+            sar_narrative=str(narrative)
+        )
     except Exception as e:
         chat_response = f"Chat Failed: {e}"
         print(f"❌ Chat Failed: {e}")
@@ -113,9 +118,9 @@ async def main():
         return
 
     scenarios = [
-        ("smurfing", "scenario_smurfing.csv"),
+        # ("smurfing", "scenario_smurfing.csv"),
         ("layering", "scenario_layering.csv"),
-        ("structuring", "scenario_structuring.csv")
+        # ("structuring", "scenario_structuring.csv")
     ]
     
     print(f"Starting evaluation of {len(scenarios)} scenarios...")

@@ -90,9 +90,10 @@ class LLMEngine:
         system_message = self.system_prompt
         user_message_content = self._build_prompt(case_data, context_str)
 
+        # Use placeholders to avoid LangChain parsing curly braces in the content as variables
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "{system_message}"),
-            ("user", "{user_message}")
+            ("system", "{system_message_content}"),
+            ("user", "{user_message_content}")
         ])
 
         # 5. Chain with Callbacks
@@ -102,8 +103,8 @@ class LLMEngine:
             # Pass audit logger as callback
             narrative_text = await chain.ainvoke(
                 {
-                    "system_message": system_message, 
-                    "user_message": user_message_content
+                    "system_message_content": system_message, 
+                    "user_message_content": user_message_content
                 }, 
                 config={'callbacks': [audit_logger]}
             )
@@ -137,66 +138,6 @@ class LLMEngine:
                 "quality_score": {},
                 "typology": None
             }
-
-    async def chat_with_sar(self, query: str, case_data: dict, sar_narrative: str) -> str:
-        """
-        Chat with the SAR context (RAG + Case Data).
-        """
-        from langchain_ollama import ChatOllama
-        from langchain_core.prompts import ChatPromptTemplate
-        from langchain_core.output_parsers import StrOutputParser
-        
-        # 1. Retrieve Regulatory Context (RAG)
-        rag_docs = await self.rag_pipeline.retrieve_context(query)
-        rag_context = "\n".join([f"- {d['content']}" for d in rag_docs])
-        
-        # 2. Build Context-Aware Prompt
-        system_message = """You are an AI assistant helping an AML analyst review a Suspicious Activity Report (SAR).
-Your goal is to answer questions about the specific case data, the generated SAR narrative, or relevant regulations.
-
-## Rules:
-- Answer ONLY based on the provided Case Data, SAR Narrative, and Regulatory Context.
-- If the information is not present, say "I don't have that information in the current case file."
-- Be concise and helpful.
-"""
-        
-        user_message_template = """
-### CASE DATA:
-{case_data_str}
-
-### GENERATED SAR NARRATIVE:
-{sar_narrative}
-
-### RELEVANT REGULATIONS/GUIDANCE:
-{rag_context}
-
-### USER QUESTION:
-{query}
-"""
-        
-        # 3. Initialize LLM (Fast response)
-        llm = ChatOllama(
-            model=self.model,
-            base_url=self.base_url,
-            temperature=0.3,
-            keep_alive="5m"
-        )
-        
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", system_message),
-            ("user", user_message_template)
-        ])
-        
-        chain = prompt | llm | StrOutputParser()
-        
-        response = await chain.ainvoke({
-            "case_data_str": str(case_data),
-            "sar_narrative": sar_narrative,
-            "rag_context": rag_context,
-            "query": query
-        })
-        
-        return response
 
     def _build_prompt(self, case_data: dict, context: Optional[str] = None) -> str:
         """Build the full prompt from case data and RAG context."""
@@ -245,9 +186,9 @@ Your goal is to answer questions about the specific case data, the generated SAR
             "conclusion": conclusion_text
         }
 
-    async def chat_with_sar(self, case_data: dict, history: list[dict], query: str) -> str:
+    async def chat_with_sar(self, case_data: dict, history: list[dict], query: str, sar_narrative: Optional[str] = None) -> str:
         """
-        Chat with the SAR context (RAG + Conversation History).
+        Chat with the SAR context (RAG + Conversation History + Generated Narrative).
         """
         from langchain_ollama import ChatOllama
         from langchain_core.prompts import ChatPromptTemplate
@@ -256,32 +197,37 @@ Your goal is to answer questions about the specific case data, the generated SAR
         # 1. Retrieve Context
         # We include the case data in the query context implicitly
         context_query = f"{query} related to {case_data.get('customer', {}).get('name', 'Customer')}"
-        retrieved_docs = await self.rag_pipeline.retrieve_context(context_query, top_k=3)
-        context_str = "\n".join([f"- {d['content']}" for d in retrieved_docs])
+        try:
+            retrieved_docs = await self.rag_pipeline.retrieve_context(context_query, top_k=3)
+            context_str = "\n".join([f"- {d['content']}" for d in retrieved_docs])
+        except Exception:
+            context_str = "No specific regulatory context found."
         
         # 2. Build Prompt
         system_prompt = """You are an AI assistant helping a compliance officer analyze a suspicious activity case.
-        Use the provided Case Data and Regulatory Context to answer the user's question.
+        Use the provided Case Data, SAR Narrative (if available), and Regulatory Context to answer the user's question.
         If you don't know the answer, say so. Be professional and concise."""
         
         case_summary = f"Customer: {case_data.get('customer', {})}\nTransactions Summary: {len(case_data.get('transactions', []))} transactions."
         
         # Convert history to string format (naive approach for now)
-        history_str = "\n".join([f"{msg['role']}: {msg['content']}" for msg in history[-5:]]) # Last 5 messages
+        history_str = "\n".join([f"{msg.get('role', 'user')}: {msg.get('content', '')}" for msg in history[-5:]]) # Last 5 messages
         
-        user_prompt = f"""
-        CASE DATA:
-        {case_summary}
+        user_prompt_parts = [
+            "### CASE DATA:",
+            case_summary,
+            "\n### REGULATORY CONTEXT:",
+            context_str,
+            "\n### CHAT HISTORY:",
+            history_str
+        ]
+
+        if sar_narrative:
+            user_prompt_parts.insert(2, f"\n### GENERATED SAR NARRATIVE:\n{sar_narrative}")
+
+        user_prompt_parts.append(f"\n### USER QUESTION:\n{query}")
         
-        REGULATORY CONTEXT:
-        {context_str}
-        
-        CHAT HISTORY:
-        {history_str}
-        
-        USER QUESTION:
-        {query}
-        """
+        user_prompt = "\n".join(user_prompt_parts)
         
         # 3. Call LLM
         llm = ChatOllama(
@@ -291,15 +237,19 @@ Your goal is to answer questions about the specific case data, the generated SAR
             keep_alive="5m"
         )
         
+        # Use placeholders to avoid LangChain parsing curly braces in the content as variables
         prompt = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            ("user", user_prompt)
+            ("system", "{system_prompt_content}"),
+            ("user", "{user_prompt_content}")
         ])
         
         chain = prompt | llm | StrOutputParser()
         
         try:
-            response = await chain.ainvoke({})
+            response = await chain.ainvoke({
+                "system_prompt_content": system_prompt,
+                "user_prompt_content": user_prompt
+            })
             return response
         except Exception as e:
             return f"I encountered an error answering that: {e}"
