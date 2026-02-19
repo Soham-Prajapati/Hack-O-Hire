@@ -1,8 +1,12 @@
 # 🏦 SAR Narrative Generator with Intelligent Audit Trail
 
 > AI-powered Suspicious Activity Report drafting system with full audit trail for financial compliance.
-> Project Proof of Work (Demo Link) - https://drive.google.com/file/d/1uDQjJLefBslbnY7I0MawKGtMalz0dfEg/view?usp=sharing
-> Project Proof of Work (Github Link) - https://github.com/Soham-Prajapati/Hack-O-Hire
+
+> Project Proof of Work (Demo Link):
+  https://drive.google.com/file/d/1uDQjJLefBslbnY7I0MawKGtMalz0dfEg/view?usp=sharing
+
+> Project Proof of Work (Github Link):
+  https://github.com/Soham-Prajapati/Hack-O-Hire
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green?logo=fastapi)](https://fastapi.tiangolo.com)
