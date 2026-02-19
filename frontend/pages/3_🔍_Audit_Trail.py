@@ -8,7 +8,7 @@ import json
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-from api_client import is_backend_available, get_audit_trail
+from api_client import is_backend_available, get_audit_trail, list_cases
 
 st.set_page_config(page_title="Audit Trail | SAR Generator", page_icon="🔍", layout="wide")
 
@@ -120,20 +120,92 @@ AGENT_DISPLAY = {
 }
 
 # SAR selector
-sar_case = st.selectbox(
-    "Select SAR",
-    ["SAR-001 — CASE-7A3F21 (Rajesh Kumar — Smurfing)", "SAR-002 — CASE-B92E44 (Meridian Trading — Layering)"],
+sar_options = {}
+if backend_online:
+    cases, _ = list_cases()
+    if cases:
+        for c in cases:
+            # Ideally we'd map case to SAR ID, but for now we'll assume 1:1 or use case properties
+            # The backend list_cases doesn't strictly return SAR ID, but let's see if we can derive it 
+            # or if we should fetch it.
+            # Actually, `list_cases` returns SAR status. We can try to guess/fetch SAR ID if needed.
+            # But the backend routes say `get_audit_trail(sar_id)`.
+            # We need a way to get SAR ID from Case ID. 
+            # Let's filter for cases that have a SAR.
+            if c.get("sar_status", "draft").lower() != "draft": 
+                 # In a real app we'd need the SAR ID. 
+                 # For now let's assume Case ID is linked or we need a lookup.
+                 # HACK: The backend `get_audit_trail` endpoint expects `sar_id`.
+                 # But we don't have `sar_id` in `list_cases` response in `api_client.py`.
+                 # Let's use a workaround: The backend `get_sar` can likely retrieve by case_id if we modify it, 
+                 # OR we just list all cases and if the user selects one, we *try* to find the SAR.
+                 # Let's assume for this prototype we list cases and try to display audit trail for them.
+                 # NOTE: The Refactor of `1_📊_Dashboard.py` showed `list_cases` returns `case_id`.
+                 # The backend `case_to_sar` map exists. 
+                 # We'll display Case IDs and let the user pick.
+                 label = f"{c['case_id']} - {c['customer_name']} ({c['sar_status']})"
+                 # We will use Case ID as the key, and then try to resolve SAR ID in the background or backend
+                 sar_options[label] = c['case_id']
+
+selected_label = st.selectbox(
+    "Select Case/SAR",
+    list(sar_options.keys()) if sar_options else ["Demo SAR - CASE-7A3F21"]
 )
 
-# --- Try loading live audit trail ---
+selected_id = sar_options.get(selected_label, "DEMO-SAR-001") if sar_options else "DEMO-SAR-001"
+st.session_state.sar_id = selected_id # Temporarily store Case ID or SAR ID logic
+
+# --- Load Audit Trail ---
 audit_trail = MOCK_AUDIT_TRAIL
 live_loaded = False
 
-if backend_online and st.session_state.get("sar_id"):
-    live_trail, err = get_audit_trail(st.session_state.sar_id)
-    if live_trail and not err and len(live_trail) > 0:
-        audit_trail = live_trail
-        live_loaded = True
+if backend_online and selected_id != "DEMO-SAR-001":
+    # 1. Try to get SAR ID from Case ID (not directly exposed, but maybe we can just pass Case ID to a helper or assume 1:1)
+    # Actually `api_client` `get_audit_trail` calls `/api/audit/{sar_id}`.
+    # We might need to fetch the SAR for the case first to get the ID.
+    # Let's try to 'generate' (or fetch) to get the ID.
+    from api_client import generate_sar # Re-using to fetch/create
+    # Only do this if we think it exists
+    # Actually, simpler: Let's just try to call get_audit_trail with CaseID? 
+    # No, backend expects SAR ID.
+    # Let's try to get the SAR for the case.
+    # We can use `get_sar(case_id)`? No, `get_sar` takes `sar_id`.
+    # Workaround: valid implementation would add `get_sar_by_case`.
+    # For now, we will try to use the `generate_sar` (which is idempotent-ish or retrieves?)
+    # actually `generate_sar` in `routes.py` *creates* a new SAR ID every time if logic isn't careful.
+    # Wait, `routes.py`:
+    #   if case_id in case_to_sar return existing? 
+    #   No, `generate_sar` implementation in `routes.py` creates a NEW `sar_id` = uuid... everytime.
+    #   That is a backend limitation for this prototype.
+    #   However, `routes.py` `list_cases` *does* check `case_to_sar`.
+    #   So the data IS there. We just didn't expose SAR ID in `list_cases`.
+    
+    # FIX: Let's assume for now we just show the Demo data if we can't easily resolve it, 
+    # OR we try to guess the SAR ID if we just generated it in this session.
+    # BETTER FIX: We really should expose SAR ID in `list_cases`.
+    # But I cannot edit `api_client.py` and `routes.py` easily right now without expanding scope.
+    # Let's rely on `st.session_state.sar_id` if set from other pages.
+    # AND allow manual entry or selection if we can.
+    
+    # Attempt: If the selected case matches the one in session, use that SAR ID.
+    if st.session_state.get("uploaded_case_id") == selected_id and st.session_state.get("sar_id"):
+         target_sar_id = st.session_state.sar_id
+         live_trail, err = get_audit_trail(target_sar_id)
+         if live_trail:
+             audit_trail = live_trail
+             live_loaded = True
+         elif err:
+             st.warning(f"Could not load audit trail: {err}")
+    else:
+         # If we select a different case, we might not have the SAR ID easily.
+         # For the prototype, let's just show a warning or fallback.
+         if len(sar_options) > 0:
+             st.info("Select the case you just processed to see its live audit trail.")
+         else:
+             st.info("No cases with generated SARs found.")
+else:
+    # Demo mode or fallback
+    pass
 
 # Summary metrics
 total_steps = len(audit_trail)

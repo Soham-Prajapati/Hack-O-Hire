@@ -69,7 +69,7 @@ def generate_sar(case_id):
     # type: (str) -> Tuple[Optional[dict], Optional[str]]
     """Call POST /api/generate-sar. Returns (sar_response, error)."""
     try:
-        r = requests.post(f"{API_BASE}/generate-sar", json={"case_id": case_id}, timeout=60)
+        r = requests.post(f"{API_BASE}/generate-sar", json={"case_id": case_id}, timeout=300)
         if r.status_code == 200:
             return r.json(), None
         else:

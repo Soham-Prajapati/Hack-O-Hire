@@ -32,46 +32,17 @@ if "sar_id" not in st.session_state:
     st.session_state.sar_id = None
 
 # --- MOCK DATA (Realistic fallback for demo) ---
+# --- MOCK DATA (Fallback ONLY when backend is offline) ---
 MOCK_CASES = [
     {
-        "case_id": "CASE-7A3F21",
-        "customer_name": "Rajesh Kumar",
+        "case_id": "DEMO-7A3F21",
+        "customer_name": "Rajesh Kumar (Offline Demo)",
         "alert_type": "High Volume Inbound Transfers",
         "risk_level": "🔴 CRITICAL",
         "sar_status": "Draft",
         "total_amount": "₹50,12,000",
         "txn_count": 21,
         "created_at": "2026-02-15 10:30",
-    },
-    {
-        "case_id": "CASE-B92E44",
-        "customer_name": "Meridian Trading LLC",
-        "alert_type": "Shell Company Round-Tripping",
-        "risk_level": "🔴 CRITICAL",
-        "sar_status": "Review",
-        "total_amount": "₹2,34,00,000",
-        "txn_count": 83,
-        "created_at": "2026-02-14 16:45",
-    },
-    {
-        "case_id": "CASE-D1F087",
-        "customer_name": "Anita Chauhan",
-        "alert_type": "Sub-Threshold Cash Deposits",
-        "risk_level": "🟠 HIGH",
-        "sar_status": "Approved",
-        "total_amount": "₹9,85,000",
-        "txn_count": 12,
-        "created_at": "2026-02-13 09:15",
-    },
-    {
-        "case_id": "CASE-E4C5A2",
-        "customer_name": "Vikram Malhotra",
-        "alert_type": "Unusual Wire Transfer Pattern",
-        "risk_level": "🟡 MEDIUM",
-        "sar_status": "Draft",
-        "total_amount": "₹15,40,000",
-        "txn_count": 7,
-        "created_at": "2026-02-16 11:20",
     },
 ]
 
@@ -229,27 +200,60 @@ with st.sidebar:
 st.markdown('<p class="main-header">🏦 SAR Narrative Generator</p>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">AI-powered Suspicious Activity Report drafting with complete audit trail & regulatory compliance</p>', unsafe_allow_html=True)
 
+# --- FETCH DATA ---
+display_cases = []
+if backend_online:
+    live_cases, err = list_cases()
+    if live_cases:
+        for lc in live_cases:
+            risk_map = {"critical": "🔴 CRITICAL", "high": "🟠 HIGH", "medium": "🟡 MEDIUM", "low": "🟢 LOW"}
+            display_cases.append({
+                "case_id": lc.get("case_id", ""),
+                "customer_name": lc.get("customer_name", "Unknown"),
+                "alert_type": lc.get("alert_type", "Suspicious Transaction"),
+                "risk_level": risk_map.get(lc.get("risk_level", "medium"), "🟡 MEDIUM"),
+                "sar_status": lc.get("sar_status", "draft").capitalize(),
+                "total_amount": "—", # API doesn't return this yet in list view
+                "txn_count": "—",
+                "created_at": lc.get("created_at", datetime.now().isoformat()),
+            })
+else:
+    display_cases = MOCK_CASES
+
+# Calculate Metrics
+total_cases = len(display_cases)
+status_counts = {"Draft": 0, "Review": 0, "Approved": 0}
+risk_counts = {"Critical": 0, "High": 0, "Medium": 0, "Low": 0}
+
+for c in display_cases:
+    s = c.get("sar_status", "Draft")
+    status_counts[s] = status_counts.get(s, 0) + 1
+    
+    r = c.get("risk_level", "").split(" ")[-1].capitalize() # Extract "CRITICAL" from "🔴 CRITICAL"
+    if r in risk_counts:
+        risk_counts[r] += 1
+
 # Metrics row
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    st.markdown("""<div class="metric-card">
-        <div class="metric-value">4</div>
+    st.markdown(f"""<div class="metric-card">
+        <div class="metric-value">{total_cases}</div>
         <div class="metric-label">Total Cases</div>
     </div>""", unsafe_allow_html=True)
 with col2:
-    st.markdown("""<div class="metric-card">
-        <div class="metric-value metric-value-yellow">3</div>
+    st.markdown(f"""<div class="metric-card">
+        <div class="metric-value metric-value-yellow">{status_counts['Draft']}</div>
         <div class="metric-label">SARs Drafted</div>
     </div>""", unsafe_allow_html=True)
 with col3:
-    st.markdown("""<div class="metric-card">
-        <div class="metric-value metric-value-red">1</div>
+    st.markdown(f"""<div class="metric-card">
+        <div class="metric-value metric-value-red">{status_counts['Review']}</div>
         <div class="metric-label">Pending Review</div>
     </div>""", unsafe_allow_html=True)
 with col4:
-    st.markdown("""<div class="metric-card">
-        <div class="metric-value metric-value-green">1</div>
+    st.markdown(f"""<div class="metric-card">
+        <div class="metric-value metric-value-green">{status_counts['Approved']}</div>
         <div class="metric-label">Approved</div>
     </div>""", unsafe_allow_html=True)
 with col5:
@@ -341,31 +345,9 @@ with col_left:
 with col_right:
     st.markdown("### 🚨 Active Cases")
     
-    # Try live data first, fall back to mock
-    display_cases = MOCK_CASES
-    if backend_online:
-        live_cases, err = list_cases()
-        if live_cases and not err:
-            # Merge: show live cases + mock cases
-            live_ids = {c.get("case_id") for c in live_cases}
-            merged = []
-            for lc in live_cases:
-                risk_map = {"critical": "🔴 CRITICAL", "high": "🟠 HIGH", "medium": "🟡 MEDIUM", "low": "🟢 LOW"}
-                merged.append({
-                    "case_id": lc.get("case_id", ""),
-                    "customer_name": lc.get("customer_name", "Unknown"),
-                    "alert_type": lc.get("alert_type", "Suspicious Transaction"),
-                    "risk_level": risk_map.get(lc.get("risk_level", "medium"), "🟡 MEDIUM"),
-                    "sar_status": lc.get("sar_status", "draft").capitalize(),
-                    "total_amount": "—",
-                    "txn_count": "—",
-                    "created_at": lc.get("created_at", ""),
-                })
-            # Add mock cases that aren't in live
-            for mc in MOCK_CASES:
-                if mc["case_id"] not in live_ids:
-                    merged.append(mc)
-            display_cases = merged
+    # Display cases (already fetched above)
+    if not display_cases:
+        st.info("No active cases found. Upload data to get started.")
 
     for i, case in enumerate(display_cases):
         badge_class = {
@@ -401,28 +383,32 @@ c1, c2, c3 = st.columns(3)
 
 with c1:
     st.markdown("#### Risk Distribution")
-    risk_data = pd.DataFrame({
-        "Risk Level": ["Critical", "High", "Medium", "Low"],
-        "Cases": [2, 1, 1, 0],
-    })
-    st.bar_chart(risk_data.set_index("Risk Level"), color="#667eea")
+    risk_df = pd.DataFrame(list(risk_counts.items()), columns=["Risk Level", "Cases"])
+    st.bar_chart(risk_df.set_index("Risk Level"), color="#667eea")
 
 with c2:
     st.markdown("#### SAR Status Overview")
-    status_data = pd.DataFrame({
-        "Status": ["Draft", "Review", "Approved"],
-        "Count": [2, 1, 1],
-    })
-    st.bar_chart(status_data.set_index("Status"), color="#34d399")
+    status_df = pd.DataFrame(list(status_counts.items()), columns=["Status", "Count"])
+    st.bar_chart(status_df.set_index("Status"), color="#34d399")
 
 with c3:
     st.markdown("#### Recent Activity")
-    st.markdown("""
-    - 🟢 **10:30** — CASE-7A3F21 created
-    - 🔵 **16:45** — CASE-B92E44 → Review  
-    - ✅ **09:15** — CASE-D1F087 Approved
-    - 🟡 **11:20** — CASE-E4C5A2 created
-    """)
+    # Sort by created_at desc
+    sorted_cases = sorted(display_cases, key=lambda x: x.get("created_at", ""), reverse=True)[:5]
+    
+    activity_html = ""
+    for c in sorted_cases:
+        ts = c.get("created_at", "").split("T")[-1][:5] # Extract HH:MM
+        status_icon = "🟢"
+        if c['sar_status'] == "Review": status_icon = "🔵"
+        if c['sar_status'] == "Approved": status_icon = "✅"
+        
+        activity_html += f"- {status_icon} **{ts}** — {c['case_id']} ({c['sar_status']})\n"
+        
+    if not activity_html:
+        activity_html = "*No recent activity*"
+        
+    st.markdown(activity_html)
 
 st.markdown("---")
 st.markdown(

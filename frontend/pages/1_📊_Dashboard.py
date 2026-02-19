@@ -105,8 +105,7 @@ if backend_online:
 # Mock data fallback
 if not cases_data:
     cases_data = [
-        {"case_id": "CASE-7A3F21", "customer_name": "Rajesh Kumar", "risk_level": "critical", "sar_status": "draft", "alert_type": "structuring", "created_at": "2026-02-15"},
-        {"case_id": "CASE-B92E44", "customer_name": "Meridian Trading LLC", "risk_level": "critical", "sar_status": "review", "alert_type": "layering", "created_at": "2026-02-14"},
+        {"case_id": "DEMO-7A3F21", "customer_name": "Rajesh Kumar (Demo)", "risk_level": "critical", "sar_status": "draft", "alert_type": "structuring", "created_at": "2026-02-15"},
     ]
 
 # Convert to DF
@@ -209,13 +208,22 @@ with tab_analytics:
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("#### Typology Distribution")
-        chart_data = pd.DataFrame({
-            "Typology": ["Structuring", "Layering", "Smurfing"],
-            "Count": [45, 30, 25]
-        })
-        st.bar_chart(chart_data.set_index("Typology"), color="#7000ff")
+        if not df.empty and "alert_type" in df.columns:
+            # Count alert types
+            typology_counts = df["alert_type"].value_counts().reset_index()
+            typology_counts.columns = ["Typology", "Count"]
+            st.bar_chart(typology_counts.set_index("Typology"), color="#7000ff")
+        else:
+            st.info("No data available for typologies.")
+
     with c2:
         st.markdown("#### Risk Timeline")
-        st.line_chart([10, 20, 15, 25, 30], color="#00f2ff")
+        if not df.empty and "created_at" in df.columns:
+            # Convert to datetime and count by date
+            df["date"] = pd.to_datetime(df["created_at"]).dt.date
+            timeline = df.groupby("date").size()
+            st.line_chart(timeline, color="#00f2ff")
+        else:
+            st.info("No timeline data available.")
 
 
