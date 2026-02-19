@@ -182,3 +182,62 @@ class LLMEngine:
             "body": body_text,
             "conclusion": conclusion_text
         }
+
+    async def chat_with_sar(self, case_data: dict, history: list[dict], query: str) -> str:
+        """
+        Chat with the SAR context (RAG + Conversation History).
+        """
+        from langchain_ollama import ChatOllama
+        from langchain_core.prompts import ChatPromptTemplate
+        from langchain_core.output_parsers import StrOutputParser
+        
+        # 1. Retrieve Context
+        # We include the case data in the query context implicitly
+        context_query = f"{query} related to {case_data.get('customer', {}).get('name', 'Customer')}"
+        retrieved_docs = await self.rag_pipeline.retrieve_context(context_query, top_k=3)
+        context_str = "\n".join([f"- {d['content']}" for d in retrieved_docs])
+        
+        # 2. Build Prompt
+        system_prompt = """You are an AI assistant helping a compliance officer analyze a suspicious activity case.
+        Use the provided Case Data and Regulatory Context to answer the user's question.
+        If you don't know the answer, say so. Be professional and concise."""
+        
+        case_summary = f"Customer: {case_data.get('customer', {})}\nTransactions Summary: {len(case_data.get('transactions', []))} transactions."
+        
+        # Convert history to string format (naive approach for now)
+        history_str = "\n".join([f"{msg['role']}: {msg['content']}" for msg in history[-5:]]) # Last 5 messages
+        
+        user_prompt = f"""
+        CASE DATA:
+        {case_summary}
+        
+        REGULATORY CONTEXT:
+        {context_str}
+        
+        CHAT HISTORY:
+        {history_str}
+        
+        USER QUESTION:
+        {query}
+        """
+        
+        # 3. Call LLM
+        llm = ChatOllama(
+            model=self.model,
+            base_url=self.base_url,
+            temperature=0.4,
+            keep_alive="5m"
+        )
+        
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("user", user_prompt)
+        ])
+        
+        chain = prompt | llm | StrOutputParser()
+        
+        try:
+            response = await chain.ainvoke({})
+            return response
+        except Exception as e:
+            return f"I encountered an error answering that: {e}"

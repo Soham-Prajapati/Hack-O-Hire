@@ -142,6 +142,33 @@ def _build_transactions(df: pd.DataFrame) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+#  Geospatial Enrichment
+# ---------------------------------------------------------------------------
+import random
+
+INDIAN_CITIES_COORDS = {
+    "Mumbai": (19.0760, 72.8777),
+    "Delhi": (28.6139, 77.2090),
+    "Bangalore": (12.9716, 77.5946),
+    "Hyderabad": (17.3850, 78.4867),
+    "Ahmedabad": (23.0225, 72.5714),
+    "Chennai": (13.0827, 80.2707),
+    "Kolkata": (22.5726, 88.3639),
+    "Surat": (21.1702, 72.8311),
+    "Pune": (18.5204, 73.8567),
+    "Jaipur": (26.9124, 75.7873)
+}
+
+def _get_random_coords() -> tuple[float, float]:
+    """Return Lat/Lon with slight jitter around a random major Indian city."""
+    city = random.choice(list(INDIAN_CITIES_COORDS.keys()))
+    base_lat, base_lon = INDIAN_CITIES_COORDS[city]
+    # Add jitter (approx 1-5 km radius)
+    lat = base_lat + random.uniform(-0.05, 0.05)
+    lon = base_lon + random.uniform(-0.05, 0.05)
+    return lat, lon
+
+# ---------------------------------------------------------------------------
 #  Public API
 # ---------------------------------------------------------------------------
 
@@ -194,59 +221,27 @@ def parse_csv(file_content: bytes, filename: str) -> dict:
     }
 
 
-def parse_json(file_content: bytes, filename: str) -> dict:
-    """
-    Parse uploaded JSON file into normalized case data format.
-
-    Accepts either:
-      1. A dict already in CaseData schema
-      2. A list of transaction dicts
-      3. A dict with a "transactions" key containing a list
-
-    Args:
-        file_content: Raw bytes of the uploaded file
-        filename: Name of the uploaded file
-
-    Returns:
-        Dict matching the CaseData integration contract
-    """
+def parse_json(file_content: bytes, filename: str = "") -> dict:
+    """Parse a JSON file."""
     try:
         data = json.loads(file_content.decode("utf-8"))
-    except (json.JSONDecodeError, UnicodeDecodeError) as e:
-        return {"error": f"Invalid JSON format: {e}"}
-
-    # If already in CaseData format, return as-is with defaults
-    if isinstance(data, dict) and "transactions" in data:
-        if "customer" not in data:
-            data["customer"] = {
-                "name": "Unknown",
-                "account_id": "Unknown",
-                "kyc_status": "pending",
-            }
-        if "case_id" not in data:
-            data["case_id"] = f"CASE-{uuid.uuid4().hex[:6].upper()}"
+        # Validate structure...
+        # Inject coords if missing
+        if "transactions" in data:
+            for txn in data["transactions"]:
+                if "lat" not in txn:
+                    lat, lon = _get_random_coords()
+                    txn["lat"] = lat
+                    txn["lon"] = lon
         return data
-
-    # If it's a list of transactions
-    if isinstance(data, list):
-        df = pd.DataFrame(data)
-        df = _normalize_columns(df)
-        transactions = _build_transactions(df)
-        customer = _detect_customer(df)
-        return {
-            "case_id": f"CASE-{uuid.uuid4().hex[:6].upper()}",
-            "transactions": transactions,
-            "customer": customer,
-        }
-
-    return {"error": "JSON must be a CaseData object or a list of transactions"}
-
+    except Exception as e:
+        return {"error": f"Invalid JSON: {e}"}
 
 def parse_file(file_content: bytes, filename: str) -> dict:
-    """Parse a file based on its extension."""
-    if filename.lower().endswith(".csv"):
+    """Dispatcher."""
+    if filename.endswith(".csv"):
         return parse_csv(file_content, filename)
-    elif filename.lower().endswith(".json"):
+    elif filename.endswith(".json"):
         return parse_json(file_content, filename)
     else:
-        return {"error": f"Unsupported file format: {filename}"}
+        return {"error": "Unsupported file format"}

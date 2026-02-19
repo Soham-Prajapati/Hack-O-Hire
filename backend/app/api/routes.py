@@ -25,7 +25,10 @@ from app.api.schemas import (
     TypologyResult,
     RiskLevel,
     UploadResponse,
+    ChatRequest,
+    ChatResponse,
 )
+from fastapi.responses import Response, JSONResponse
 from datetime import datetime
 
 # --- Ensure ml_models is importable ---
@@ -378,9 +381,84 @@ async def list_cases():
 #  7. AUDIT TRAIL endpoint
 # =========================================================================== #
 
-@router.get("/audit/{sar_id}", tags=["Audit"])
+@router.get("/sar/{sar_id}/audit-trail", tags=["Audit"])
 async def get_audit_trail(sar_id: str):
-    """Get the full audit trail for a SAR."""
+    """Get the audit trail for a specific SAR."""
     if sar_id not in sars_store:
         raise HTTPException(status_code=404, detail=f"SAR {sar_id} not found")
     return {"sar_id": sar_id, "audit_trail": sars_store[sar_id].audit_trail}
+
+
+# =========================================================================== #
+#  8. NEW "WOW" FEATURES (PDF, Graph, Chat)
+# =========================================================================== #
+
+@router.post("/export-pdf", tags=["Export"])
+async def export_pdf(request: GenerateSARRequest):
+    """Generate and return a PDF of the SAR."""
+    sar_id = request.case_id # Reusing field to pass SAR ID or Case ID
+    
+    # Try looking up by SAR ID first
+    sar_data = None
+    if sar_id in sars_store:
+        sar_obj = sars_store[sar_id]
+        # Convert SARResponse object to dict for the generator
+        sar_data = sar_obj.dict()
+    # Try looking up by Case ID
+    elif sar_id in case_to_sar:
+        real_sar_id = case_to_sar[sar_id]
+        if real_sar_id in sars_store:
+             sar_data = sars_store[real_sar_id].dict()
+             
+    if not sar_data:
+        raise HTTPException(status_code=404, detail="SAR not found")
+
+    try:
+        from app.utils.pdf_generator import generate_sar_pdf
+        pdf_bytes = generate_sar_pdf(sar_data)
+        
+        headers = {
+            'Content-Disposition': f'attachment; filename="SAR_{sar_data.get("case_id", "REPORT")}.pdf"'
+        }
+        return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {e}")
+
+
+@router.get("/graph-data/{case_id}", tags=["Visuals"])
+async def get_graph_data(case_id: str):
+    """Get node-link data for the transaction network graph."""
+    if case_id not in cases_store:
+        raise HTTPException(status_code=404, detail="Case not found")
+        
+    case_data = cases_store[case_id]
+    transactions = case_data.get("transactions", [])
+    
+    try:
+        from app.utils.graph_generator import build_transaction_network
+        graph_data = build_transaction_network(transactions)
+        return graph_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Graph generation failed: {e}")
+
+
+@router.post("/chat", response_model=ChatResponse, tags=["Chat"])
+async def chat_with_sar(request: ChatRequest):
+    """Chat with the SAR context (RAG + History)."""
+    case_id = request.case_id
+    if case_id not in cases_store:
+         raise HTTPException(status_code=404, detail="Case not found")
+         
+    case_data = cases_store[case_id]
+    
+    llm = _get_llm_engine()
+    if not llm:
+        return ChatResponse(response="LLM Engine is offline. Please check server logs.")
+        
+    try:
+        # Convert Pydantic history to list of dicts
+        history = [h.dict() for h in request.history]
+        response_text = await llm.chat_with_sar(case_data, history, request.query)
+        return ChatResponse(response=response_text)
+    except Exception as e:
+         return ChatResponse(response=f"Error: {str(e)}")

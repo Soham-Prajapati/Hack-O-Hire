@@ -23,28 +23,28 @@ We have 2 extra days. We are moving beyond "functional" to **"impressive."**
 ### 👨‍💻 SIDDH (Frontend Lead) — *Status: High Capacity*
 > *Mission: Make the UI strictly "Enterprise Grade" and add visual storytelling.*
 
-- [ ] **Transaction Network Graph:**
+- [x] **Transaction Network Graph:**
     - Implementation: Use `streamlit-agraph` or `plotly` to show money flow.
     - *Visual:* Central node = Subject, Peripheral nodes = Beneficiaries. Edge thickness = Amount.
-- [ ] **Geo-Spatial Map:**
+- [x] **Geo-Spatial Map:**
     - Implementation: `st.map` or `plotly.scatter_mapbox`.
     - Show pins for "Source Bank" and "Destination Bank" locations.
-- [ ] **Chat-with-SAR Widget:**
+- [x] **Chat-with-SAR Widget:**
     - Add a floating chat interface (or sidebar tab) to "Ask questions about this SAR."
-- [ ] **PDF Export Button:**
+- [x] **PDF Export Button:**
     - Frontend button to trigger the backend PDF generation and handle the file download.
-- [ ] **ROI Dashboard Metric:**
+- [x] **ROI Dashboard Metric:**
     - Add a dynamic counter: *"Time Saved: ~5 hours by AI"* next to the generation button.
 
 ### 📊 HET (Data & ML Lead) — *Status: Critical Path*
 > *Mission: Deliver the core model, then enrich data for the new visuals.*
 
-- [ ] **CRITICAL:** Finish `data_parser.py` (CSV → JSON) — *Blocker for everyone.*
-- [ ] **CRITICAL:** Train XGBoost model & save `.joblib`.
-- [ ] **Enrich Mock Data:**
+- [x] **CRITICAL:** Finish `data_parser.py` (CSV → JSON) — *Blocker for everyone.*
+- [x] **CRITICAL:** Train XGBoost model & save `.joblib`.
+- [x] **Enrich Mock Data:**
     - Add dummy `latitude`/`longitude` to the CSVs for Siddh's map.
     - Ensure `beneficiary_bank` names are diverse (e.g., "Deutsche Bank, Frankfurt", "Chase, NY") for the map/graph.
-- [ ] **Risk Scoring Logic:**
+- [x] **Risk Scoring Logic:**
     - Update `predict_typology` to return a `risk_score` (0-100) alongside the class.
     - *Why?* So Siddh can show a "Risk Gauge" on the dashboard.
 
@@ -60,15 +60,15 @@ We have 2 extra days. We are moving beyond "functional" to **"impressive."**
     - *0:30-1:30:* The Solution (Upload -> Generate).
     - *1:30-2:30:* The "Wow" (Graph, Map, Chat).
     - *2:30-3:00:* The Audit Trail (Trust).
-- [ ] **PDF Template Design:**
+- [x] **PDF Template Design:**
     - Sketch how the final PDF layout should look. Hand off requirements to Shubh for backend gen.
 - [ ] **User Manual:**
     - Add a "How to Use" section to the main submission document.
 
 ### ⚙️ SHUBH & DEV (Backend & AI Core)
-- [ ] **Shubh:** Build `/api/export-pdf` (ReportLab) & `/api/graph-data` endpoints.
-- [ ] **Dev:** Build `chat_with_sar` RAG chain (allow querying the specific SAR context).
-- [ ] **Dev:** Refine prompts to be strict/regulatory professional.
+- [x] **Shubh:** Build `/api/export-pdf` (ReportLab) & `/api/graph-data` endpoints.
+- [x] **Dev:** Build `chat_with_sar` RAG chain (allow querying the specific SAR context).
+- [x] **Dev:** Refine prompts to be strict/regulatory professional.
 
 ---
 

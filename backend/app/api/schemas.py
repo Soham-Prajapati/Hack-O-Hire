@@ -122,3 +122,19 @@ class UploadResponse(BaseModel):
     message: str = ""
     transaction_count: int = 0
     customer_name: str = "Unknown"
+
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
+class ChatRequest(BaseModel):
+    case_id: str
+    query: str
+    history: list[ChatMessage] = []
+
+
+class ChatResponse(BaseModel):
+    response: str
+

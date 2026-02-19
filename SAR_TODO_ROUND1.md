@@ -93,17 +93,17 @@ chmod +x setup.sh
   - `narrative` (intro + body + conclusion)
   - `audit_trail` (list of reasoning steps)
   - `quality_score` (completeness, compliance, readability, evidence)
-- [ ] Test: Feed `scenario_smurfing.csv` → get a real SAR narrative out
-- [ ] Experiment with prompt quality — iterate until narrative reads professional
+- [x] Test: Feed `scenario_smurfing.csv` → get a real SAR narrative out
+- [x] Experiment with prompt quality — iterate until narrative reads professional
 
 ### SIDDH — Frontend (Streamlit UI)
 - [x] **Dashboard:** Case list with status badges (Draft/Review/Approved), metrics cards ✅
 - [x] **Upload page:** File uploader → show parsed data in table ✅
 - [x] **SAR Editor:** Split-screen (data left, narrative editor right), Approve/Reject/Export buttons ✅
 - [x] **Audit Trail:** Expandable cards, color-coded steps ✅
-- [x] Wire up to backend API (`requests.get/post` to FastAPI) — `api_client.py` + all pages wired ✅
+- [x] **Wire up to backend API (`requests.get/post` to FastAPI) — `api_client.py` + all pages wired ✅
 - [x] **IMPORTANT:** If backend not ready, use **mock JSON** so UI is fully demo-able ✅
-- [x] Add loading spinners, dark mode polish ✅
+- [x] **Add loading spinners, dark mode polish ✅
 
 ### HET — Data & ML
 - [x] Download SAML-D dataset (or subset ~50K rows) from Kaggle
@@ -128,17 +128,17 @@ chmod +x setup.sh
 > **Shubh leads integration.** Others provide their modules.
 
 ### SHUBH — Integration Captain
-- [ ] Integrate Dev's `generate_sar()` into API route
-- [ ] Integrate Het's `predict_typology()` into pipeline
-- [ ] Test full E2E: Upload → Generate → Audit → Edit → Approve
-- [ ] Fix any integration bugs
+- [x] Integrate Dev's `generate_sar()` into API route
+- [x] Integrate Het's `predict_typology()` into pipeline
+- [x] Test full E2E: Upload → Generate → Audit → Edit → Approve
+- [x] Fix any integration bugs
 - [ ] Help record demo video
 
 ### DEV — LLM Quality + Polish
-- [ ] Improve prompt based on initial outputs
-- [ ] Add quality scoring logic (are all 5Ws present?)
-- [ ] Test all 3 demo scenarios — ensure good output
-- [ ] Help Shubh with integration debugging
+- [x] Improve prompt based on initial outputs
+- [x] Add quality scoring logic (are all 5Ws present?)
+- [x] Test all 3 demo scenarios — ensure good output
+- [x] Help Shubh with integration debugging
 
 ### SIDDH — Frontend Final + Video
 - [x] Connect to live backend (replace mocks) — graceful fallback when offline ✅

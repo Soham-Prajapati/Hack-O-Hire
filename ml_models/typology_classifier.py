@@ -350,6 +350,7 @@ class TypologyClassifier:
         return {
             "typology": typology,
             "confidence": round(confidence, 4),
+            "risk_score": int(confidence * 100) if typology != "normal" else int(confidence * 10),
             "top_features": feat_imp,
         }
 
