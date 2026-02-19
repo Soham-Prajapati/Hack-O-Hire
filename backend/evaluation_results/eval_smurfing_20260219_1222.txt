@@ -1,0 +1,30 @@
+SCENARIO: SMURFING
+DATE: 2026-02-19 12:22:22.109523
+==================================================
+
+### CUSTOMER PROFILE
+{'name': 'Rajesh Gupta', 'id': 'CUST-101', 'risk_profile': 'Medium', 'occupation': 'Small Business Owner'}
+
+### GENERATED NARRATIVE
+INTRODUCTION:
+Error generating SAR.
+
+BODY:
+All connection attempts failed
+
+CONCLUSION:
+Please check LLM connection.
+
+### QUALITY SCORES
+{}
+
+### CHAT SANITY CHECK
+Q: What is the total suspicious amount and the main typology?
+A: I encountered an error answering that: 'Input to ChatPromptTemplate is missing variables {"\'name\'"}.  Expected: ["\'name\'"] Received: []\nNote: if you intended {\'name\'} to be part of the string and not a variable, please escape it with double curly braces like: \'{{\'name\'}}\'.\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/INVALID_PROMPT_INPUT '
+
+### AUDIT TRAIL PREVIEW (First 5 Steps)
+[1] Started SAR Generation: Case Data: {'customer': {'name': 'Rajesh Gupta', '...
+[2] Retrieving Content: Query: Suspicious activity for customer Rajesh Gup...
+[3] Context Retrieved: Found 0 documents....
+[1] Prompting Model: System: You are an expert Anti-Money Laundering (A...
+[99] Generation Failed: All connection attempts failed...
