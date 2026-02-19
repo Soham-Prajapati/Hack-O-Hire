@@ -103,8 +103,16 @@ Once we integrate the backend, the frontend will call `http://localhost:8000/api
 
 ---
 
-## 🦙 Ollama Setup (Docker — Recommended)
+## 🦙 Ollama Setup
 
+### 1. One-Click Startup (Recommended)
+Run the script to start Backend, Frontend, and AI (detects venv automatically):
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+### 2. Manual Docker Setup
 Do NOT install Ollama directly on an 8GB RAM machine. Use Docker instead:
 
 ```bash

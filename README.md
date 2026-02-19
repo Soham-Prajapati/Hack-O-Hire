@@ -67,7 +67,17 @@ Frontend (Streamlit) → REST API (FastAPI) → Multi-Agent Pipeline (LangChain)
 - Docker & Docker Compose
 - [Ollama](https://ollama.com/) installed
 
-### 1. Clone & Setup
+- [Ollama](https://ollama.com/) installed
+
+### 🚀 1. One-Click Startup (Recommended)
+Run the all-in-one script to start Backend, Frontend, and AI services:
+```bash
+./start.sh
+```
+*(This closes old processes, checks Ollama, and launches everything)*
+
+### 2. Manual Setup
+If you prefer running services separately:
 ```bash
 git clone https://github.com/Soham-Prajapati/Hack-O-Hire.git
 cd Hack-O-Hire

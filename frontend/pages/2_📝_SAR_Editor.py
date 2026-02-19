@@ -81,7 +81,9 @@ with col_editor:
 
     if start_gen:
         with st.spinner("Generating SAR..."):
-            sar_data = generate_sar(selected_case_id)
+            sar_data, error = generate_sar(selected_case_id)
+            if error:
+                st.error(f"Generation failed: {error}")
     else:
          sar_data, _ = get_sar(selected_case_id) if backend_online else (None, "Offline")
     

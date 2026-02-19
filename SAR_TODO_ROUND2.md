@@ -69,6 +69,7 @@ We have 2 extra days. We are moving beyond "functional" to **"impressive."**
 - [x] **Shubh:** Build `/api/export-pdf` (ReportLab) & `/api/graph-data` endpoints.
 - [x] **Dev:** Build `chat_with_sar` RAG chain (allow querying the specific SAR context).
 - [x] **Dev:** Refine prompts to be strict/regulatory professional.
+- [ ] **Dev:** **IMPORTANT:** See `DEV_PENDING_TASKS.md` for remaining Evaluation & Tuning tasks.
 
 ---
 
