@@ -34,11 +34,24 @@ async def main():
     result = await engine.generate_sar(case_data)
     
     print("\n=== NARRATIVE ===")
-    print(result["narrative"])
+    narrative_str = f"INTRODUCTION\n{result['narrative']['introduction']}\n\nBODY\n{result['narrative']['body']}\n\nCONCLUSION\n{result['narrative']['conclusion']}"
+    print(narrative_str)
     
     print("\n=== AUDIT TRAIL ===")
     for step in result["audit_trail"]:
         print(f"[{step['step']}] {step['action']}: {str(step['output'])[:100]}...")
+
+    print("\n=== TESTING CHAT WITH SAR ===")
+    queries = [
+        "What is the total suspicious amount?",
+        "Why is this activity considered suspicious?",
+        "Who are the main subjects involved?"
+    ]
+
+    for q in queries:
+        print(f"\nUser: {q}")
+        response = await engine.chat_with_sar(case_data, [], q)
+        print(f"AI: {response}")
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -84,7 +84,7 @@ chmod +x setup.sh
 - [x] Help Dev with any LLM integration issues
 
 ### DEV — LLM/RAG Core (AI Heavy)
-- [/] Install Ollama, pull `llama3.1:8b` model (Download at ~80%)
+- [x] Install Ollama, pull `llama3.1:8b` model (Download at ~80%)
 - [x] Build full SAR generation system prompt (FinCEN format, 5Ws+How, guardrails)
 - [x] Index knowledge base docs (SAR templates + FinCEN guidance) into ChromaDB
 - [x] Build RAG chain: query → retrieve templates → augment prompt → generate
@@ -94,7 +94,11 @@ chmod +x setup.sh
   - `audit_trail` (list of reasoning steps)
   - `quality_score` (completeness, compliance, readability, evidence)
 - [x] Test: Feed `scenario_smurfing.csv` → get a real SAR narrative out
+<<<<<<< Updated upstream
 - [x] Experiment with prompt quality — iterate until narrative reads professional
+=======
+- [/] Experiment with prompt quality — iterate until narrative reads professional
+>>>>>>> Stashed changes
 
 ### SIDDH — Frontend (Streamlit UI)
 - [x] **Dashboard:** Case list with status badges (Draft/Review/Approved), metrics cards ✅

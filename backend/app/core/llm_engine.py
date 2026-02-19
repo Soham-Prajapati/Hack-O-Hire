@@ -7,38 +7,40 @@ from typing import Optional
 
 
 # SAR generation system prompt
-SAR_SYSTEM_PROMPT = """You are an expert financial compliance officer specializing in writing Suspicious Activity Reports (SARs) for banking institutions. You generate clear, concise, and regulator-ready SAR narratives following FinCEN guidelines.
+SAR_SYSTEM_PROMPT = """You are an expert Anti-Money Laundering (AML) Compliance Officer at a major financial institution. Your task is to write a Suspicious Activity Report (SAR) narrative that strictly adheres to **FinCEN guidance**.
 
-## Output Format
-Always structure the SAR narrative in three sections:
+## OBJECTIVE
+Generate a clean, professional, and audit-ready narrative that explains the suspicious activity clearly to law enforcement. Use **active voice**, be **concise**, and avoid speculation.
+
+## MANDATORY STRUCTURE
+Use these exact headers:
 
 ### INTRODUCTION
-- Brief statement of the SAR's purpose
-- Type of suspicious activity being reported
-- Reference to any previously filed SARs on the subject
-- Internal investigation reference number
+- **Executive Summary:** One clear sentence stating why this SAR is being filed (e.g., "This SAR is being filed to report potential structuring and smurfing activity...").
+- **Subject:** Identify the main subject(s) (e.g., "The activity involves customer [Name], account [ID]...").
+- **Timeframe:** Mention the start and end dates of the review period.
+- **Investigation Source:** How was this alert triggered? (e.g., "Internal TM alert for rapid movement of funds").
 
-### BODY (Address all 5Ws + How)
-- **WHO:** Identify the individuals/entities involved, account details, customer history
-- **WHAT:** Describe the specific transactions/behaviors that are suspicious
-- **WHEN:** Dates and timeframes of the suspicious activity
-- **WHERE:** Locations, branches, jurisdictions involved
-- **WHY:** Explain why the activity is suspicious given the customer's profile
-- **HOW:** Detail the method of operation used
+### BODY (The 5Ws + How)
+- **WHO:** Full identity of subject(s), occupation, risk profile, and any known adverse media or negative history.
+- **WHAT:** Detailed chronology of transactions. Group similar transactions (e.g., "Between Jan 1 and Jan 5, 2026, the subject received 5 incoming high-value credits totaling $50,000...").
+- **WHEN:** Specific dates and times (use Format: Month DD, YYYY).
+- **WHERE:** Branch locations, originating jurisdictions, beneficiary banks.
+- **WHY:** The core analysis. Why is this suspicious? (e.g., "The activity is inconsistent with the customer's profile as a student..." or "Rounds dollar amounts suggest an attempt to avoid reporting thresholds...").
+- **HOW:** The mechanism (e.g., "Funds were layered through multiple accounts using NEFT transfers...").
 
 ### CONCLUSION
-- Summary of findings
-- Actions taken or planned by the institution
-- Contact information for follow-up
-- Reference to supporting documentation
+- **Summary:** Reiterate the total suspicious amount and the potential typology (e.g., "Total suspicious activity: $150,000. Suspected typology: Money Laundering / Layering.").
+- **Action Taken:** (e.g., "The account has been placed on watch," or "Exit decision recommended.").
+- **Data Source:** Reference internal records (e.g., "Core Banking System," "KYC File").
+- **Contact:** "For further information, please contact the AML Compliance Department."
 
-## Rules
-- Be factual and objective — only state what the data shows
-- Do NOT speculate beyond what the evidence supports
-- Use professional, regulatory language
-- Do NOT discriminate based on nationality, ethnicity, or religion
-- Every claim must be traceable to specific data points
-- Keep the narrative concise but comprehensive
+## STYLE GUIDELINES (STRICT)
+1.  **Dates:** Use "Jan 15, 2026" format. Avoid "yesterday" or "last week".
+2.  **Amounts:** Use "USD 50,000" or "INR 50,000" format.
+3.  **Tone:** Formal, objective, authoritative. No "I think" or "It seems". Use "The data indicates...".
+4.  **Formatting:** Use bullet points for lists of transactions to improve readability.
+5.  **No Fluff:** Do not include greeting or closing remarks (e.g., no "Here is your SAR"). Just the report.
 """
 
 
@@ -135,6 +137,66 @@ class LLMEngine:
                 "quality_score": {},
                 "typology": None
             }
+
+    async def chat_with_sar(self, query: str, case_data: dict, sar_narrative: str) -> str:
+        """
+        Chat with the SAR context (RAG + Case Data).
+        """
+        from langchain_ollama import ChatOllama
+        from langchain_core.prompts import ChatPromptTemplate
+        from langchain_core.output_parsers import StrOutputParser
+        
+        # 1. Retrieve Regulatory Context (RAG)
+        rag_docs = await self.rag_pipeline.retrieve_context(query)
+        rag_context = "\n".join([f"- {d['content']}" for d in rag_docs])
+        
+        # 2. Build Context-Aware Prompt
+        system_message = """You are an AI assistant helping an AML analyst review a Suspicious Activity Report (SAR).
+Your goal is to answer questions about the specific case data, the generated SAR narrative, or relevant regulations.
+
+## Rules:
+- Answer ONLY based on the provided Case Data, SAR Narrative, and Regulatory Context.
+- If the information is not present, say "I don't have that information in the current case file."
+- Be concise and helpful.
+"""
+        
+        user_message_template = """
+### CASE DATA:
+{case_data_str}
+
+### GENERATED SAR NARRATIVE:
+{sar_narrative}
+
+### RELEVANT REGULATIONS/GUIDANCE:
+{rag_context}
+
+### USER QUESTION:
+{query}
+"""
+        
+        # 3. Initialize LLM (Fast response)
+        llm = ChatOllama(
+            model=self.model,
+            base_url=self.base_url,
+            temperature=0.3,
+            keep_alive="5m"
+        )
+        
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_message),
+            ("user", user_message_template)
+        ])
+        
+        chain = prompt | llm | StrOutputParser()
+        
+        response = await chain.ainvoke({
+            "case_data_str": str(case_data),
+            "sar_narrative": sar_narrative,
+            "rag_context": rag_context,
+            "query": query
+        })
+        
+        return response
 
     def _build_prompt(self, case_data: dict, context: Optional[str] = None) -> str:
         """Build the full prompt from case data and RAG context."""
